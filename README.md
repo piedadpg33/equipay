@@ -1,6 +1,6 @@
 # Equipay
 
-Aplicación móvil para dividir gastos y gestionar cuentas compartidas.
+Aplicación para web y android con el objetivo de dividir gastos y gestionar cuentas compartidas.
 
 
 ---
