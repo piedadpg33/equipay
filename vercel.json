@@ -1,0 +1,13 @@
+{
+  "buildCommand": "expo export:web",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "npm install",
+  "functions": {},
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
