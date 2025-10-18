@@ -1,0 +1,246 @@
+import React, { useState } from 'react';
+import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import LuckyWheel from '../components/LuckyWheel';
+import { globalStyles } from '../styles/globalStyles';
+
+const WheelPage = () => {
+  const [names, setNames] = useState<string[]>([]);
+  const [newName, setNewName] = useState('');
+  const [showWheel, setShowWheel] = useState(false);
+
+  const addName = () => {
+    if (newName.trim() === '') {
+      Alert.alert('Error', 'Please enter a name');
+      return;
+    }
+    if (names.length >= 12) {
+      Alert.alert('Error', 'Maximum 12 names allowed');
+      return;
+    }
+    setNames([...names, newName.trim()]);
+    setNewName('');
+  };
+
+  const removeName = (index: number) => {
+    const newNames = names.filter((_, i) => i !== index);
+    setNames(newNames);
+  };
+
+  const clearAllNames = () => {
+    setNames([]);
+  };
+
+  const spinWheel = () => {
+    if (names.length < 2) {
+      Alert.alert('Error', 'You need at least 2 names to spin the wheel');
+      return;
+    }
+    setShowWheel(true);
+  };
+
+
+  const closeWheel = () => {
+    setShowWheel(false);
+  };
+
+  return (
+    <View style={{ padding: 30, flex: 1, backgroundColor: '#f0f0f0' }}>
+      <ScrollView 
+        contentContainerStyle={{ 
+          padding: 16, 
+          alignItems: 'center',
+          minHeight: '100%'
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+
+        {/* Add Name Section */}
+        <View style={globalStyles.inputContainer}>
+          <View style={globalStyles.inputWrapper}>
+            <TextInput
+              style={globalStyles.input}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder="Enter a name..."
+              placeholderTextColor="#999"
+              maxLength={15}
+              onSubmitEditing={addName}
+            />
+          </View>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <TouchableOpacity
+            style={[globalStyles.button, { marginTop: 10 }]}
+            onPress={addName}
+          >
+            <Text style={globalStyles.buttonText}>Add Name</Text>
+          </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Names List */}
+        <View style={{ width: '100%', marginVertical: 20 }}>
+          <Text style={[globalStyles.label, { textAlign: 'center', marginBottom: 15 }]}>
+            Names in Wheel ({names.length}/12)
+          </Text>
+          
+          {names.length === 0 ? (
+            <View style={{
+              padding: 20,
+              backgroundColor: '#fff',
+              borderRadius: 12,
+              alignItems: 'center',
+              borderStyle: 'dashed',
+              borderWidth: 2,
+              borderColor: '#ddd'
+            }}>
+              <Text style={{ color: '#999', fontSize: 16 }}>
+                No names added yet
+              </Text>
+              <Text style={{ color: '#999', fontSize: 14, marginTop: 5 }}>
+                Add some names to get started!
+              </Text>
+            </View>
+          ) : (
+            <View style={{
+              backgroundColor: '#fff',
+              borderRadius: 12,
+              padding: 15,
+              elevation: 2,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.1,
+              shadowRadius: 2,
+            }}>
+              {names.map((name, index) => (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingVertical: 12,
+                    paddingHorizontal: 10,
+                    backgroundColor: index % 2 === 0 ? '#f8f9fa' : '#fff',
+                    borderRadius: 8,
+                    marginVertical: 2,
+                  }}
+                >
+                  <Text style={{ fontSize: 16, fontWeight: '500', color: '#333' }}>
+                    {index + 1}. {name}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => removeName(index)}
+                    style={{
+                      backgroundColor: '#ff4757',
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      borderRadius: 15,
+                    }}
+                  >
+                    <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>
+                      Remove
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Action Buttons */}
+        <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              {
+                backgroundColor: names.length < 2 ? '#ccc' : 'rgba(0, 122, 255, 0.35)',
+                marginBottom: 15,
+              }
+            ]}
+            onPress={spinWheel}
+            disabled={names.length < 2}
+          >
+            <Text style={globalStyles.buttonText}>
+              🎰 Spin the Wheel!
+            </Text>
+          </TouchableOpacity>
+
+          {names.length > 0 && (
+            <TouchableOpacity
+              style={[
+                globalStyles.button,
+                {
+                  backgroundColor: 'rgba(255, 71, 87, 0.35)',
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
+                }
+              ]}
+              onPress={clearAllNames}
+            >
+              <Text style={globalStyles.buttonText}>Clear All Names</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Wheel Modal */}
+      <Modal
+        visible={showWheel}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeWheel}
+      >
+        <View style={{
+          flex: 1,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20,
+        }}>
+          <View style={{
+            backgroundColor: '#fff',
+            borderRadius: 20,
+            padding: 20,
+            alignItems: 'center',
+            maxWidth: '95%',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 8,
+          }}>
+            <Text style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              marginBottom: 20,
+              textAlign: 'center',
+              color: '#333'
+            }}>
+               Lucky Wheel
+            </Text>
+
+            <LuckyWheel
+              segments={names}
+                onFinish={() => {}}
+            />
+
+            <TouchableOpacity
+              style={[
+                globalStyles.button,
+                {
+                  marginTop: 20,
+                  backgroundColor: 'rgba(108, 117, 125, 0.35)',
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
+                }
+              ]}
+              onPress={closeWheel}
+            >
+              <Text style={globalStyles.buttonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+export default WheelPage;
