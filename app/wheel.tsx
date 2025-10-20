@@ -44,7 +44,7 @@ const WheelPage = () => {
   };
 
   return (
-    <View style={{ padding: 30, flex: 1, backgroundColor: '#f0f0f0' }}>
+    <View style={{ padding: 30, flex: 1, backgroundColor: '#f0f0f0', width: '70%', alignSelf: 'center' }}>
       <ScrollView 
         contentContainerStyle={{ 
           padding: 16, 

@@ -4,8 +4,8 @@ import { Balance, Expense, expenseService, Group, groupService } from '@/service
 import { globalStyles } from '@/styles/globalStyles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Dimensions, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 const GroupDetailPage = () => {
@@ -71,6 +71,42 @@ const GroupDetailPage = () => {
         getExpenses();
     }, []);
 
+    // Pastel colors for PieChart
+    const pastelColors = useMemo(() => [
+        '#FFD1DC', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#E2F0CB', '#B5ADEA', '#FFB7B2', '#B2F7EF', '#E0BBE4', '#FFDFD3',
+        '#FFFACD', '#D1F2EB', '#F3E5AB', '#F7CAC9', '#BFD8B8', '#F6E3B4', '#C2B9B0', '#F9E79F', '#D6EAF8', '#FAD7A0',
+        '#F5CBA7', '#D5F5E3', '#FDEDEC', '#D2B4DE', '#F9E79F', '#A9DFBF', '#F6DDCC', '#FDEBD0', '#D4E6F1', '#F7F9F9'
+    ], []);
+
+    // Calculate user payments for PieChart
+    const userPayments = useMemo(() => {
+        if (!grupo?.members || !Array.isArray(grupo.members)) return [];
+        
+        return grupo.members.map((member: string) => {
+            const memberExpenses = listExpenses.filter(exp => exp.sender === member);
+            const totalPaid = memberExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+            return {
+                name: member,
+                paid: totalPaid,
+                percentage: totalExpenses > 0 ? (totalPaid / totalExpenses) * 100 : 0
+            };
+        });
+    }, [grupo?.members, listExpenses, totalExpenses]);
+
+    // Dates for PieChart
+    const pieData = useMemo(() => {
+        const usersWithPayments = userPayments.filter(user => user.paid > 0);
+        
+        return usersWithPayments.map((user, idx) => ({
+            name: `${user.name} (${user.percentage.toFixed(1)}%)`,
+            population: user.paid,
+            color: pastelColors[idx % pastelColors.length],
+            legendFontColor: '#333',
+            legendFontSize: 12,
+            legendFontFamily: 'SpaceMono-Regular'
+        }));
+    }, [userPayments, pastelColors]);
+
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -91,8 +127,13 @@ const GroupDetailPage = () => {
         <ScrollView contentContainerStyle={{ padding: 16 }}>
 
             {/* LuckyWheel modal */}
-            {showWheel && Array.isArray(grupo.members) && (
-                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+            <Modal
+                visible={showWheel && Array.isArray(grupo.members)}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowWheel(false)}
+            >
+                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 16 }}>
                     <View style={{ backgroundColor: '#e5dcf1ff', borderRadius: 24, padding: 24, alignItems: 'center', width: '95%', maxWidth: 420, elevation: 8, boxShadow: '0 4px 8px rgba(0,0,0,0.2)', position: 'relative' }}>
                         <TouchableOpacity
                             onPress={() => setShowWheel(false)}
@@ -120,7 +161,7 @@ const GroupDetailPage = () => {
                         />
                     </View>
                 </View>
-            )}
+            </Modal>
 
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
                 Total spent: {totalExpenses.toFixed(2)} €
@@ -216,8 +257,7 @@ const GroupDetailPage = () => {
             </View>
 
             
-            {activeTab === 'Expenses' && (
-                <>
+            {activeTab === 'Expenses' ? (
                 <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
                     {listExpenses.length === 0 ? (
                         <Text style={{ color: '#888', textAlign: 'center', marginVertical: 20 }}>
@@ -251,142 +291,103 @@ const GroupDetailPage = () => {
                         ))
                     )}
                 </ScrollView>
-                
-                <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 24 }}>
+            ) : null}
+
+            {activeTab === 'Balances' && Array.isArray(grupo.members) ? (
+                <View style={{ marginTop: 16, alignItems: 'center' }}>
+                    {/* Graphical representation of user contributions */}
+                    {pieData.length > 0 ? (
+                        <>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
+                                Contribution by User (% of Total Paid)
+                            </Text>
+                            <PieChart
+                                data={pieData}
+                                width={Dimensions.get('window').width * 0.9}
+                                height={220}
+                                chartConfig={{
+                                    color: () => '#333',
+                                    labelColor: () => '#333',
+                                    propsForLabels: { fontFamily: 'SpaceMono-Regular' }
+                                }}
+                                accessor={'population'}
+                                backgroundColor={'transparent'}
+                                paddingLeft={'10'}
+                                absolute
+                                hasLegend={true}
+                            />
+                            {/* Detailed Breakdown */}
+                            <ScrollView style={{ marginTop: 16, width: '100%', maxHeight: 300 }} showsVerticalScrollIndicator={false}>
+                                {userPayments.map((user, idx) => (
+                                    <View key={user.name} style={{
+                                        backgroundColor: '#f7f7fa',
+                                        borderRadius: 12,
+                                        padding: 12,
+                                        marginBottom: 8,
+                                        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        borderLeftWidth: 4,
+                                        borderLeftColor: user.paid > 0 ? pastelColors[idx % pastelColors.length] : '#e0e0e0'
+                                    }}>
+                                        <View>
+                                            <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{user.name}</Text>
+                                            <Text style={{ fontSize: 12, color: '#666' }}>
+                                                Paid: {user.paid.toFixed(2)} €
+                                            </Text>
+                                        </View>
+                                        <View style={{ alignItems: 'flex-end' }}>
+                                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#007AFF' }}>
+                                                {user.percentage.toFixed(1)}%
+                                            </Text>
+                                            {user.paid === 0 && (
+                                                <Text style={{ fontSize: 12, color: '#999', fontStyle: 'italic' }}>
+                                                    No payments made
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                        </>
+                    ) : (
+                        <Text style={{ color: '#888' }}>There are no expenses recorded to display the chart.</Text>
+                    )}
+
+                    {/* List of final balances */}
+                    <ScrollView style={{ marginTop: 24, width: '100%', maxHeight: 300 }} showsVerticalScrollIndicator={false}>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
+                            Final Balances:
+                        </Text>
+                        {balances.map(b => (
+                            <View key={b.nombre} style={{
+                                backgroundColor: '#f7f7fa',
+                                borderRadius: 12,
+                                padding: 12,
+                                marginBottom: 10,
+                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                            }}>
+                                <Text style={{ fontSize: 16, color: '#333' }}>{b.nombre}</Text>
+                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: b.balance < 0 ? '#d32f2f' : '#388e3c' }}>
+                                    {b.balance < 0 ? `owes ${Math.abs(b.balance).toFixed(2)} €` : `is owed ${b.balance.toFixed(2)} €`}
+                                </Text>
+                            </View>
+                        ))}
+                    </ScrollView>
+                </View>
+            ) : null}
+
+                            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 24 }}>
                     <TouchableOpacity style={globalStyles.button}
                         onPress={() => router.push(`/(auth)/group/${id}/addExpense` as any)}
                     >
                         <Text style={globalStyles.buttonText}>Add Expense</Text>
                     </TouchableOpacity>
                 </View>
-                </>
-            )}
-
-            {activeTab === 'Balances' && (
-                <>
-                    {Array.isArray(grupo.members) && (
-                        <>
-                            <View style={{ marginTop: 16, alignItems: 'center' }}>
-                                {/* Graphical representation of user contributions */}
-                                {(() => {
-                                    const pastelColors = [
-                                        '#FFD1DC', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#E2F0CB', '#B5ADEA', '#FFB7B2', '#B2F7EF', '#E0BBE4', '#FFDFD3',
-                                        '#FFFACD', '#D1F2EB', '#F3E5AB', '#F7CAC9', '#BFD8B8', '#F6E3B4', '#C2B9B0', '#F9E79F', '#D6EAF8', '#FAD7A0',
-                                        '#F5CBA7', '#D5F5E3', '#FDEDEC', '#D2B4DE', '#F9E79F', '#A9DFBF', '#F6DDCC', '#FDEBD0', '#D4E6F1', '#F7F9F9'
-                                    ];
-
-                                    // Matching how much each user has paid
-                                    const userPayments = grupo.members.map((member: string) => {
-                                        const memberExpenses = listExpenses.filter(exp => exp.sender === member);
-                                        const totalPaid = memberExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
-                                        return {
-                                            name: member,
-                                            paid: totalPaid,
-                                            percentage: totalExpenses > 0 ? (totalPaid / totalExpenses) * 100 : 0
-                                        };
-                                    });
-
-                                    // Filter users who have paid something
-                                    const usersWithPayments = userPayments.filter(user => user.paid > 0);
-
-                                    const pieData = usersWithPayments.map((user, idx) => ({
-                                        name: `${user.name} (${user.percentage.toFixed(1)}%)`,
-                                        population: user.paid,
-                                        color: pastelColors[idx % pastelColors.length],
-                                        legendFontColor: '#333',
-                                        legendFontSize: 12,
-                                        legendFontFamily: 'SpaceMono-Regular'
-                                    }));
-
-                                    return pieData.length > 0 ? (
-                                        <>
-                                            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
-                                                Contribution by User (% of Total Paid)
-                                            </Text>
-                                            <PieChart
-                                                data={pieData}
-                                                width={Dimensions.get('window').width * 0.9}
-                                                height={220}
-                                                chartConfig={{
-                                                    color: () => '#333',
-                                                    labelColor: () => '#333',
-                                                    propsForLabels: { fontFamily: 'SpaceMono-Regular' }
-                                                }}
-                                                accessor={'population'}
-                                                backgroundColor={'transparent'}
-                                                paddingLeft={'10'}
-                                                absolute
-                                                hasLegend={true}
-                                            />
-                                            {/* Detailed Breakdown */}
-                                            <ScrollView style={{ marginTop: 16, width: '100%', maxHeight: 300 }} showsVerticalScrollIndicator={false}>
-                                                {userPayments.map((user, idx) => (
-                                                    <View key={user.name} style={{
-                                                        backgroundColor: '#f7f7fa',
-                                                        borderRadius: 12,
-                                                        padding: 12,
-                                                        marginBottom: 8,
-                                                        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)',
-                                                        flexDirection: 'row',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'space-between',
-                                                        borderLeftWidth: 4,
-                                                        borderLeftColor: user.paid > 0 ? pastelColors[idx % pastelColors.length] : '#e0e0e0'
-                                                    }}>
-                                                        <View>
-                                                            <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{user.name}</Text>
-                                                            <Text style={{ fontSize: 12, color: '#666' }}>
-                                                                <Text style={{ fontSize: 12, color: '#666' }}>
-                                                                    Paid: {user.paid.toFixed(2)} €
-                                                                </Text>
-                                                            </Text>
-                                                        </View>
-                                                        <View style={{ alignItems: 'flex-end' }}>
-                                                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#007AFF' }}>
-                                                                {user.percentage.toFixed(1)}%
-                                                            </Text>
-                                                            {user.paid === 0 && (
-                                                                <Text style={{ fontSize: 12, color: '#999', fontStyle: 'italic' }}>
-                                                                    No payments made
-                                                                </Text>
-                                                            )}
-                                                        </View>
-                                                    </View>
-                                                ))}
-                                            </ScrollView>
-                                        </>
-                                    ) : <Text style={{ color: '#888' }}>There are no expenses recorded to display the chart.</Text>;
-                                })()}
-
-                                {/* List of final balances */}
-                                <ScrollView style={{ marginTop: 24, width: '100%', maxHeight: 300 }} showsVerticalScrollIndicator={false}>
-                                    <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
-                                        Final Balances:
-                                    </Text>
-                                    {(() => {
-                                        return balances.map(b => (
-                                            <View key={b.nombre} style={{
-                                                backgroundColor: '#f7f7fa',
-                                                borderRadius: 12,
-                                                padding: 12,
-                                                marginBottom: 10,
-                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between'
-                                            }}>
-                                                <Text style={{ fontSize: 16, color: '#333' }}>{b.nombre}</Text>
-                                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: b.balance < 0 ? '#d32f2f' : '#388e3c' }}>
-                                                    {b.balance < 0 ? `owes ${Math.abs(b.balance).toFixed(2)} €` : `is owed ${b.balance.toFixed(2)} €`}
-                                                </Text>
-                                            </View>
-                                        ));
-                                    })()}
-                                </ScrollView>
-                            </View></>
-                    )}
-                </>
-            )}
 
         </ScrollView>
     );

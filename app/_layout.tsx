@@ -3,7 +3,7 @@ import AuthProvider, { useAuth } from "@/providers/AuthProvider";
 import { Ionicons } from '@expo/vector-icons';
 import { router, Stack } from "expo-router";
 import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 
 // Header Menu Component
 const HeaderMenu = () => {
@@ -27,50 +27,43 @@ const HeaderMenu = () => {
         <Ionicons name="menu" size={24} color="black" />
       </TouchableOpacity>
 
-      {menuVisible && (
-        <>
-          
-          <TouchableOpacity 
-            style={{
-              position: 'absolute',
-              top: -100,
-              left: -300,
-              right: -50,
-              bottom: -500,
-              backgroundColor: 'transparent',
-              zIndex: 1
-            }}
-            onPress={() => setMenuVisible(false)}
-          />
-          
-          {/* Menu */}
+      <Modal
+        visible={menuVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <TouchableOpacity 
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-end',
+            paddingTop: 90,
+            paddingRight: 20
+          }}
+          onPress={() => setMenuVisible(false)}
+        >
           <View style={{
-            position: 'absolute',
-            top: 40,
-            right: -8,
             backgroundColor: '#fff',
             borderRadius: 8,
             elevation: 5,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
+            boxShadow : '0 2px 4px rgba(0,0,0,0.2)',
             padding: 8,
             minWidth: 150,
-            zIndex: 2
           }}>
-<Text style={{ 
-  paddingVertical: 12, 
-  paddingHorizontal: 8, 
-  fontSize: 16,
-  fontWeight: '500',
-  color: '#2c3e50',
-  borderBottomWidth: 1,
-  borderBottomColor: '#ecf0f1',
-  marginBottom: 4
-}}>
-  {nameUser}
-</Text>
+            <Text style={{ 
+              paddingVertical: 12, 
+              paddingHorizontal: 8, 
+              fontSize: 16,
+              fontWeight: '500',
+              color: '#2c3e50',
+              borderBottomWidth: 1,
+              borderBottomColor: '#ecf0f1',
+              marginBottom: 4
+            }}>
+              {nameUser}
+            </Text>
             <TouchableOpacity
               onPress={() => {router.push('/wheel'); setMenuVisible(false);}}
               style={{ paddingVertical: 12, paddingHorizontal: 8 }}
@@ -84,12 +77,9 @@ const HeaderMenu = () => {
             >
               <Text style={{ fontSize: 16 }}>Log Out</Text>
             </TouchableOpacity>
-
-
-            
           </View>
-        </>
-      )}
+        </TouchableOpacity>
+      </Modal>
     </>
   );
 };

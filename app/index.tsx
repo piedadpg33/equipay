@@ -42,7 +42,7 @@ const Page = () => {
 
 	return (
 		<View style={{ backgroundColor: '#f0f0f0' }}>
-			<ScrollView style={{maxHeight:600, padding: 16}} showsVerticalScrollIndicator={false}>
+			<ScrollView style={{maxHeight:600, padding: 16, width: '90%', alignSelf: 'center'}} showsVerticalScrollIndicator={false}>
 				{gruposUsuario.map((grupo) => (
 					<TouchableOpacity
 						key={grupo.id}
@@ -60,14 +60,15 @@ const Page = () => {
 					</TouchableOpacity>
 				))}
 			</ScrollView>
-				<View style={{ justifyContent: 'center', alignItems: 'center' }}>
-					<TouchableOpacity
-						style={globalStyles.button}
-						onPress={() => router.push('/(auth)/newgroup/' as any)}
-					>
-						<Text style={globalStyles.buttonText}>Create Group</Text>
-					</TouchableOpacity>
-				</View>
+
+			<View style={{ justifyContent: 'center', alignItems: 'center' }}>
+				<TouchableOpacity
+					style={globalStyles.button}
+					onPress={() => router.push('/(auth)/newgroup/' as any)}
+				>
+					<Text style={globalStyles.buttonText}>Create Group</Text>
+				</TouchableOpacity>
+			</View>
 
 			
 		</View>

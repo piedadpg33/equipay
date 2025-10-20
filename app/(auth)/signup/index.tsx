@@ -57,73 +57,73 @@ export default function SignUp() {
         <View style={styles.container}>
             <Text style={styles.title}>Sign Up</Text>
         
-
-            <Controller
-                control={control}
-                name="name"
-                render={({ field: { onChange, value } }) => (
-                    <View style={styles.inputContainer}>
-                        <Text>Name</Text>
-                        <View style={styles.inputWrapper} >
-                            <Ionicons name="person" size={24} color="black" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Piedad"
-                                placeholderTextColor={"#999"}
-                                onChangeText={onChange}
-                                value={value}
-                            />
+            <View style={{  width: '90%'}}>
+                <Controller
+                    control={control}
+                    name="name"
+                    render={({ field: { onChange, value } }) => (
+                        <View style={styles.inputContainer}>
+                            <Text>Name</Text>
+                            <View style={styles.inputWrapper} >
+                                <Ionicons name="person" size={24} color="black" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Piedad"
+                                    placeholderTextColor={"#999"}
+                                    onChangeText={onChange}
+                                    value={value ?? ''}
+                                />
+                            </View>
+                            {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+                            {error === 'Name is already taken' && <Text style={styles.errorText}>Name is already taken</Text>}
                         </View>
-                        {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
-                        {error === 'Name is already taken' && <Text style={styles.errorText}>Name is already taken</Text>}
-                    </View>
-                )}
-            />
+                    )}
+                />
 
-            <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, value } }) => (   
-                    <View style={styles.inputContainer}>
-                        <Text>Email</Text>
-                        <View style={styles.inputWrapper} >
-                            <Ionicons name="mail" size={24} color="black" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="you@example.com"
-                                placeholderTextColor={"#999"}
-                                onChangeText={onChange}
-                                value={value}
-                            />
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, value } }) => (   
+                        <View style={styles.inputContainer}>
+                            <Text>Email</Text>
+                            <View style={styles.inputWrapper} >
+                                <Ionicons name="mail" size={24} color="black" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="you@example.com"
+                                    placeholderTextColor={"#999"}
+                                    onChangeText={onChange}
+                                    value={value ?? ''}
+                                />
+                            </View>
+                            {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
                         </View>
-                        {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-                    </View>
-                )}
-            />  
+                    )}
+                />  
 
-            <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, value } }) => (   
-                    <View style={styles.inputContainer}>
-                        <Text>Password</Text>
-                        <View style={styles.inputWrapper} >
-                            <Ionicons name="lock-closed" size={24} color="black" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="********"
-                                placeholderTextColor={"#999"}
-                                secureTextEntry
-                                onChangeText={onChange}
-                                value={value}
-                            />
+                <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, value } }) => (   
+                        <View style={styles.inputContainer}>
+                            <Text>Password</Text>
+                            <View style={styles.inputWrapper} >
+                                <Ionicons name="lock-closed" size={24} color="black" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="********"
+                                    placeholderTextColor={"#999"}
+                                    secureTextEntry
+                                    onChangeText={onChange}
+                                    value={value ?? ''}
+                                />
 
+                            </View>
+                            {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
                         </View>
-                        {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
-                    </View>
-                )}
-            />
-
+                    )}
+                />
+            </View>
 
             <TouchableOpacity 
                 style={[styles.button, loading && {opacity: 0.7}]}

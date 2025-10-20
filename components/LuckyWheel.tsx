@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Easing, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Defs, G, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
@@ -62,7 +62,7 @@ const LuckyWheel: React.FC<LuckyWheelProps> = ({ segments, onFinish }) => {
       toValue: rotateTo,
       duration: 4000,
       easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start(() => {
       setSpinning(false);
       onFinish(segments[winner], winner);
@@ -143,7 +143,14 @@ const LuckyWheel: React.FC<LuckyWheelProps> = ({ segments, onFinish }) => {
           </Svg>
         </Animated.View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={spin} disabled={spinning}>
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={spin} 
+        disabled={spinning}
+        accessibilityRole="button"
+        accessibilityLabel={spinning ? 'Spinning the wheel' : 'Spin the wheel'}
+        accessibilityHint='Tap to randomly select a name'
+      >
         <Text style={styles.buttonText}>{spinning ? 'Spinning...' : 'Spin Wheel'}</Text>
       </TouchableOpacity>
       {winnerIndex !== null && !spinning && (

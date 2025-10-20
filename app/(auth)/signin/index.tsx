@@ -56,52 +56,56 @@ export default function SignIn() {
         <View style={styles.container}>
             <Image
                 source={require('../../../assets/images/Logo2.png')}
-                style={{ maxWidth: 200, height: 200, marginBottom: 20 }}
+                style={{ maxWidth: 250, height: 250, marginBottom: 20 }}
                 resizeMode="contain"
             />
 
-            <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, value } }) => (
-                    <View style={styles.inputContainer}>
-                        <Text>Email</Text>
-                        <View style={styles.inputWrapper} >
-                            <Ionicons name="mail" size={24} color="black" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="you@example.com"
-                                placeholderTextColor={"#999"}
-                                onChangeText={onChange}
-                                value={value}
-                            />
-                        </View>
-                    </View>
-                )}
-            />
-            {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+            <View style={{justifyContent: 'center', width: '90%'}}>
 
-            <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, value } }) => (
-                    <View style={styles.inputContainer}>
-                        <Text>Password</Text>
-                        <View style={styles.inputWrapper} >
-                            <Ionicons name="lock-closed" size={24} color="black" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="********"
-                                placeholderTextColor={"#999"}
-                                secureTextEntry
-                                onChangeText={onChange}
-                                value={value}
-                            />
-
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, value } }) => (
+                        <View style={styles.inputContainer}>
+                            <Text>Email</Text>
+                            <View style={styles.inputWrapper} >
+                                <Ionicons name="mail" size={24} color="black" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="you@example.com"
+                                    placeholderTextColor={"#999"}
+                                    onChangeText={onChange}
+                                    value={value}
+                                />
+                            </View>
                         </View>
-                    </View>
-                )}
-            />
+                    )}
+                />
+                {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+
+                <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, value } }) => (
+                        <View style={styles.inputContainer}>
+                            <Text>Password</Text>
+                            <View style={styles.inputWrapper} >
+                                <Ionicons name="lock-closed" size={24} color="black" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="********"
+                                    placeholderTextColor={"#999"}
+                                    secureTextEntry
+                                    onChangeText={onChange}
+                                    value={value}
+                                />
+
+                            </View>
+                        </View>
+                    )}
+                />
+
+            </View>
 
             <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
                 <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
