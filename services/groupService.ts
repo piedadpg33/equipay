@@ -20,11 +20,8 @@ export const groupService = {
    */
   async getGroupById(groupId: number): Promise<Group | null> {
     try {
-      const { data, error } = await supabase
-        .from('groups')
-        .select('*')
-        .eq('id', groupId)
-        .single();
+    const { data, error } = await supabase
+      .rpc('get_group_by_id', { group_id_input: groupId });
 
       if (error || !data) {
         console.error('Error fetching group:', error);
@@ -47,10 +44,8 @@ export const groupService = {
         return [];
       }
 
-      const { data, error } = await supabase
-        .from('groups')
-        .select('*')
-        .in('id', groupIds);
+    const { data, error } = await supabase
+      .rpc('get_groups_by_ids', { ids: groupIds });
 
       if (error) {
         console.error('Error fetching groups:', error);

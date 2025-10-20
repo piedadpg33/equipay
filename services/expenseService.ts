@@ -29,10 +29,7 @@ export const expenseService = {
   async getExpensesByGroupId(groupId: number): Promise<Expense[]> {
     try {
       const { data, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('group_id', groupId)
-        .order('created_at', { ascending: false });
+        .rpc('get_expenses_by_group', { group_id_input: groupId });
 
       if (error) {
         console.error('Error fetching expenses:', error);

@@ -22,6 +22,7 @@ const CrearGrupoPage = () => {
             try {
                 setLoading(true);
                 const users = await userService.getAllUsersExcept(nameUser || '');
+                console.log('Fetched users:', users);
                 setusers(users);
             } catch (e) {
                 console.error('Error fetching users:', e);
@@ -69,7 +70,7 @@ const CrearGrupoPage = () => {
 
             const newGroup = result.group;
 
-            // Add the current user to the group
+            // Add the group to the creator's groups
             setAddingMembers([nameUser || '']);
             const userAddedToGroup = await userService.addUserToGroup(session?.user?.id || '', newGroup.id);
             
@@ -80,13 +81,17 @@ const CrearGrupoPage = () => {
                 return;
             }
 
+            console.log('Selected members to add:', selectedMembers);
+
             // Update groups array for all selected members
             for (const memberName of selectedMembers) {
                 try {
                     setAddingMembers(prev => [...prev, memberName]);
                     
                     // Get current user data by username
-                    const memberData = await userService.getUserByUsername(memberName);
+                    // Need to get user ID to add group to user's groups
+                    const memberData = users.find(u => u.user_name === memberName);
+                    //const memberData = await userService.getUserByUsername(memberName);
 
                     if (!memberData) {
                         console.error(`Error fetching member ${memberName}`);

@@ -22,17 +22,10 @@ export const authService = {
    */
   async checkNameExists(name: string): Promise<boolean> {
     const { data, error } = await supabase
-      .from('users')
-      .select('user_name')
-      .eq('user_name', name)
-      .single();
+      .rpc('username_exists', { input_name: name })
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error checking name:', error);
-      throw error;
-    }
-
-    return !!data;
+    if (error) throw error;
+    return data ?? false;
   },
 
   /**
