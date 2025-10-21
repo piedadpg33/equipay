@@ -3,6 +3,7 @@ import { CreateExpenseData, expenseService } from '@/services';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Swal from 'sweetalert2';
 import { globalStyles } from '../../../../styles/globalStyles';
 
 const AddExpensePage = () => {
@@ -50,11 +51,18 @@ const AddExpensePage = () => {
                 return;
             }
 
-            Alert.alert('Success', 'Expense added successfully');
+            Swal.fire({
+                title: "Expense added successfully",
+                text: "Refresh the group page to see the new expense.",
+                icon: "success"
+            });
             router.back();
         } catch (error) {
-            console.error('Error adding expense:', error);
-            Alert.alert('Error', 'Could not add expense');
+            Swal.fire({
+                title: "Error",
+                text: "An error occurred while adding the expense.",
+                icon: "error"
+            });
         } finally {
             setLoading(false);
         }

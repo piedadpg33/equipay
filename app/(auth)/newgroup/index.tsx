@@ -4,6 +4,7 @@ import { userService } from '@/services/userService';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Swal from 'sweetalert2';
 import { globalStyles } from '../../../styles/globalStyles';
 
 const CrearGrupoPage = () => {
@@ -115,10 +116,19 @@ const CrearGrupoPage = () => {
             setselectedMembers([]);
             setCreatingGroup(false);
             setAddingMembers([]);
-            alert('Group created successfully!');
+            Swal.fire({
+                title: "New Group Created!",
+                text: `The group ${groupName} has been created successfully.`,
+                icon: "success"
+            });
             router.replace({ pathname: '/', params: { refresh: Date.now().toString() } });
         } catch (e) {
-            console.error('Error creating group: ', e);
+            Swal.fire({
+                title: "Error",
+                text: "An error occurred while creating the group.",
+                icon: "error"
+            });
+        
             setCreatingGroup(false);
             setAddingMembers([]);
         } finally {
