@@ -54,7 +54,6 @@ export default function AuthProvider(props: Props) {
 
         // Handle deep links for OAuth
         const handleDeepLink = async (url: string) => {
-            console.log('Deep link received:', url);
             
             if (url && (url.includes('#access_token') || url.includes('?code=') || url.includes('auth/callback'))) {
                 try {
@@ -88,7 +87,6 @@ export default function AuthProvider(props: Props) {
 
         // Listen for deep links
         const subscription = Linking.addEventListener('url', ({ url }) => {
-            console.log('Deep link event received:', url);
             handleDeepLink(url);
         });
 

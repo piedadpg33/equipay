@@ -23,10 +23,8 @@ const CrearGrupoPage = () => {
             try {
                 setLoading(true);
                 const users = await userService.getAllUsersExcept(nameUser || '');
-                console.log('Fetched users:', users);
                 setusers(users);
             } catch (e) {
-                console.error('Error fetching users:', e);
                 alert('Error fetching users');
             } finally {
                 setLoading(false);
@@ -63,8 +61,6 @@ const CrearGrupoPage = () => {
             });
 
             if (!result.success || !result.group) {
-                console.error('Error creating group:', result.error);
-                alert('Error al crear el grupo');
                 setCreatingGroup(false);
                 return;
             }
@@ -76,13 +72,10 @@ const CrearGrupoPage = () => {
             const userAddedToGroup = await userService.addUserToGroup(session?.user?.id || '', newGroup.id);
             
             if (!userAddedToGroup) {
-                console.error('Error adding user to group');
-                alert('Error updating user groups');
                 setCreatingGroup(false);
                 return;
             }
 
-            console.log('Selected members to add:', selectedMembers);
 
             // Update groups array for all selected members
             for (const memberName of selectedMembers) {
@@ -101,16 +94,10 @@ const CrearGrupoPage = () => {
 
                     // Add the member to the group using userService
                     const memberAddedToGroup = await userService.addUserToGroup(memberData.user_id, newGroup.id);
-
-                    if (!memberAddedToGroup) {
-                        console.error(`Error updating groups for member ${memberName}`);
-                    }
                 } catch (error) {
                     console.error(`Error processing member ${memberName}:`, error);
                 }
             }
-
-            console.log('Grupo creado con ID:', newGroup.id);
 
             setgroupName('');
             setselectedMembers([]);

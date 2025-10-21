@@ -31,7 +31,6 @@ const GroupDetailPage = () => {
             // Get group data
             const grupoData = await groupService.getGroupById(groupId);
             if (!grupoData) {
-                console.error('Group not found');
                 setGrupo(null);
                 setLoading(false);
                 return;
