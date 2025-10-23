@@ -1,6 +1,5 @@
 // sign up, sign in, sign out, name validation
 import { supabase } from '@/lib/supabase';
-import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
@@ -189,8 +188,8 @@ export const authService = {
         return { success: true };
       } else {
         // Mobile version (Android/iOS)
-        const redirectUrl = Linking.createURL('auth/callback'); //PROBLEM PROBLEM
-        //const redirectUrl = 'equipay://auth/callback';
+        //const redirectUrl = Linking.createURL('auth/callback'); //PROBLEM PROBLEM
+        const redirectUrl = 'equipay://(auth)/callback';
         console.log('Redirect URL:', redirectUrl);
         
         const { data, error } = await supabase.auth.signInWithOAuth({
