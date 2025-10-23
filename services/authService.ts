@@ -9,6 +9,10 @@ export interface SignUpData {
   email: string;
   password?: string;
 }
+export interface SignInData {
+  email: string;
+  password?: string;
+}
 
 export interface SignUpResult {
   success: boolean;
@@ -30,27 +34,27 @@ export const authService = {
   /**
    * Sign up a new user with email and password
    */
-  async signUp(userData: SignUpData): Promise<SignUpResult> {
+  async signUp(userData: SignInData): Promise<SignUpResult> {
     try {
       // Check if name is already taken
-      const nameExists = await this.checkNameExists(userData.name);
-      if (nameExists) {
+      // const nameExists = await this.checkNameExists(userData.name);
+      // if (nameExists) {
 
-        return {
-          success: false,
-          error: 'Name is already taken'
-        };
-      }
+      //   return {
+      //     success: false,
+      //     error: 'Name is already taken'
+      //   };
+      // }
 
       // Create user account
       const { error: signUpError } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password||'',
-        options: {
-          data: {
-            name: userData.name
-          }
-        }
+        // options: {
+        //   data: {
+        //     name: userData.name
+        //   }
+        // }
       });
 
       if (signUpError) {
@@ -74,19 +78,19 @@ export const authService = {
         throw new Error('No user ID found after authentication');
       }
 
-      // Insert user profile
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert({ 
-          user_name: userData.name, 
-          email: userData.email, 
-          user_id: userId 
-        })
-        .select();
+      // // Insert user profile
+      // const { error: insertError } = await supabase
+      //   .from('users')
+      //   .insert({ 
+      //     user_name: userData.name, 
+      //     email: userData.email, 
+      //     user_id: userId 
+      //   })
+      //   .select();
 
-      if (insertError) {
-        throw insertError;
-      }
+      // if (insertError) {
+      //   throw insertError;
+      // }
 
       return { success: true };
 

@@ -46,21 +46,27 @@ const Page = () => {
 	return (
 		<View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#e4cff614', borderRadius: 12, paddingVertical: 8 }}>
 			<ScrollView style={{maxHeight:'80%', width: '100%', paddingHorizontal: 16}} showsVerticalScrollIndicator={false}>
-				{gruposUsuario.reverse().map((grupo) => (
-					<TouchableOpacity
-						key={grupo.id}
-						style={{
-							marginVertical: 8,
-							padding: 12,
-							backgroundColor: '#ffffffff',
-							borderRadius: 8,
-							elevation: 2,
-						}}
-						onPress={() => router.push({ pathname: `/(auth)/group/${grupo.id}/page` as any })}
-					>
-						<Text style={{ fontSize: 16 }}>{grupo.name}</Text>
-					</TouchableOpacity>
-				))}
+				   {gruposUsuario.length === 0 ? (
+					   <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16, color: '#555' }}>
+						   You are not part of any groups yet. Create or join a group to get started!
+					   </Text>
+				   ) : (
+					   gruposUsuario.slice().reverse().map((grupo) => (
+						   <TouchableOpacity
+							   key={grupo.id}
+							   style={{
+								   marginVertical: 8,
+								   padding: 12,
+								   backgroundColor: '#ffffffff',
+								   borderRadius: 8,
+								   elevation: 2,
+							   }}
+							   onPress={() => router.push({ pathname: `/(auth)/group/${grupo.id}/page` as any })}
+						   >
+							   <Text style={{ fontSize: 16 }}>{grupo.name}</Text>
+						   </TouchableOpacity>
+					   ))
+				   )}
 			</ScrollView>
 
 			<View style={{ justifyContent: 'center', alignItems: 'center' }}>

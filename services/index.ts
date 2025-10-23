@@ -5,7 +5,7 @@ export { groupService } from './groupService';
 export { userService } from './userService';
 
 // Export types
-export type { SignUpData, SignUpResult } from './authService';
+export type { SignInData, SignUpData, SignUpResult } from './authService';
 export type { Balance, CreateExpenseData, Expense } from './expenseService';
 export type { CreateGroupData, Group } from './groupService';
 export type { User } from './userService';

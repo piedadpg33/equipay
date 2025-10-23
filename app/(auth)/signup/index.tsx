@@ -7,17 +7,17 @@ import { z } from 'zod';
 import { Ionicons } from '@expo/vector-icons';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { authService, SignUpData } from '../../../services';
+import { authService, SignInData } from '../../../services';
 import styles from '../../../styles/globalStyles';
 
 export default function SignUp() {
 
     const signUpSchema = z.object({
-        name: z.string()
-            .min(2, { message: 'Name must be at least 2 characters' })
-            .max(30, { message: 'Name must be at most 30 characters' })
-            .nonempty({ message: 'Name is required' })
-            .regex(/^[a-z0-9_-]+$/, { message: 'Name can only contain letters, numbers, underscores, and hyphens' }),
+        // name: z.string()
+        //     .min(2, { message: 'Name must be at least 2 characters' })
+        //     .max(30, { message: 'Name must be at most 30 characters' })
+        //     .nonempty({ message: 'Name is required' })
+        //     .regex(/^[a-z0-9_-]+$/, { message: 'Name can only contain letters, numbers, underscores, and hyphens' }),
         email: z.string().email({ message: 'Invalid email address' }),
         password: z
             .string()
@@ -37,13 +37,12 @@ export default function SignUp() {
         setLoading(true);
         setError(null);
 
-        const signUpData: SignUpData = {
-            name: data.name,
+        const signInData: SignInData = {
             email: data.email,
             password: data.password
         };
 
-        const result = await authService.signUp(signUpData);
+        const result = await authService.signUp(signInData);
 
         if (!result.success) {
             setError(result.error || 'Ha ocurrido un error');
@@ -58,7 +57,7 @@ export default function SignUp() {
             <Text style={styles.title}>Sign Up</Text>
         
             <View style={{  width: '90%'}}>
-                <Controller
+                {/* <Controller
                     control={control}
                     name="name"
                     render={({ field: { onChange, value } }) => (
@@ -78,7 +77,7 @@ export default function SignUp() {
                             {error === 'Name is already taken' && <Text style={styles.errorText}>Name is already taken</Text>}
                         </View>
                     )}
-                />
+                /> */}
 
                 <Controller
                     control={control}
