@@ -46,12 +46,7 @@ const Page = () => {
 	return (
 		<View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#e4cff614', borderRadius: 12, paddingVertical: 8 }}>
 			<ScrollView style={{maxHeight:'80%', width: '100%', paddingHorizontal: 16}} showsVerticalScrollIndicator={false}>
-				{gruposUsuario.length === 0 ? (
-					<Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16, color: '#555' }}>
-						You are not a member of any groups yet. Create a new group to get started!
-					</Text>
-				) : (
-					gruposUsuario.reverse().map((grupo) => (
+				{gruposUsuario.reverse().map((grupo) => (
 					<TouchableOpacity
 						key={grupo.id}
 						style={{
@@ -65,8 +60,7 @@ const Page = () => {
 					>
 						<Text style={{ fontSize: 16 }}>{grupo.name}</Text>
 					</TouchableOpacity>
-				))
-				)}
+				))}
 			</ScrollView>
 
 			<View style={{ justifyContent: 'center', alignItems: 'center' }}>

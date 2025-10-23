@@ -4,13 +4,11 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useAuth } from "@/providers/AuthProvider";
 import { Ionicons } from '@expo/vector-icons';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { authService, SignUpData } from '../../../services';
 import styles from '../../../styles/globalStyles';
-
 
 export default function SignUp() {
 
@@ -34,7 +32,6 @@ export default function SignUp() {
     const { control, handleSubmit, formState: { errors } } = useForm<SignUpForm>({
         resolver: zodResolver(signUpSchema)
     });
-    const { setNameUser } = useAuth();
 
     const onSubmit = async (data: SignUpForm) => {
         setLoading(true);
@@ -46,12 +43,12 @@ export default function SignUp() {
             password: data.password
         };
 
-        const result = await authService.signUp(signUpData, setNameUser ? setNameUser : () => {});
+        const result = await authService.signUp(signUpData);
 
         if (!result.success) {
             setError(result.error || 'Ha ocurrido un error');
             alert(result.error || 'Ha ocurrido un error');
-        } 
+        }
 
         setLoading(false);
     }
