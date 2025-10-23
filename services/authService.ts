@@ -16,6 +16,7 @@ export interface SignUpResult {
 }
 
 export const authService = {
+
   /**
    * Check if a username already exists in the database
    */
@@ -30,7 +31,8 @@ export const authService = {
   /**
    * Sign up a new user with email and password
    */
-  async signUp(userData: SignUpData): Promise<SignUpResult> {
+  async signUp(userData: SignUpData, setNameUser: (name: string | null) => void): Promise<SignUpResult> {
+    
     try {
       // Check if name is already taken
       const nameExists = await this.checkNameExists(userData.name);
@@ -56,6 +58,10 @@ export const authService = {
       if (signUpError) {
         throw signUpError;
       }
+
+      await setNameUser?.(userData.name);
+      console.log("User name set:", userData.name);
+
 
       // Sign in the user
       const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({

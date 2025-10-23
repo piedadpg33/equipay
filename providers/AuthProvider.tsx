@@ -7,6 +7,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { supabase } from "../lib/supabase";
 
+
 // Configure WebBrowser for better OAuth experience
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,6 +33,7 @@ export default function AuthProvider(props: Props) {
     const [loading, setLoading] = useState<boolean>(true);
     const [session, setSession] = useState<Session | null>(null);
     const [nameUser, setNameUser] = useState<string | null>(null); // State to hold the user's name
+
 
     useEffect(() => {
         //watch if the user have a inited session in supabase
@@ -107,16 +109,23 @@ export default function AuthProvider(props: Props) {
         
         // If there is a UUID
         if (uuid) {
+            
             // Search the name of the user in the database
             const user =  userService.getUserById(uuid)
                 .then(user=>
-                {
-                    if (session && user?.user_name) {
-                        setNameUser(user.user_name);
-                        router.replace("/");
-                    } else {
-                        router.replace("/registername"); 
-                    }
+                {   
+                    if(session){
+                        if(nameUser){
+                            router.replace("/");
+                        } else if (user?.user_name){
+                            setNameUser(user.user_name);
+                            router.replace("/");
+                        } else {
+                            router.replace("/registername");
+                        }
+
+
+                    } 
                 }
                 );
         } else {
