@@ -130,7 +130,7 @@ const CrearGrupoPage = () => {
     ) : [];
 
     return (
-        <View style={{ flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
+        <View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
             <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#f9f9f9' }}>
                 <Text style={globalStyles.label}>Name of group:</Text>
                 <View style={globalStyles.inputContainer}>

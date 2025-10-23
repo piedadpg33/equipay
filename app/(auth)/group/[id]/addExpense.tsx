@@ -71,7 +71,7 @@ const AddExpensePage = () => {
     };
 
     return (
-        <View style={{ flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
+        <View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
             <View style={{ padding: 16 }}>
                 <View style={globalStyles.inputContainer}>
                     <Text style={globalStyles.label}>Amount (€)</Text>

@@ -45,7 +45,7 @@ const WheelPage = () => {
   };
 
   return (
-    <View style={{ padding: 30, flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12 }}>
+    <View style={{ padding: 30, flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12 }}>
 
 
       {/* Add Name Section */}

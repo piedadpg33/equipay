@@ -32,7 +32,7 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     padding: 20,
-    width: Platform.OS === 'web' ? '50%' : '100%',
+    width: Platform.OS === 'web' ? '75%' : '100%',
   },
   title: {
     fontSize: 24,
