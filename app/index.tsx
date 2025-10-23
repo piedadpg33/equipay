@@ -1,14 +1,17 @@
+import { useWebFocus } from '@/hooks/useWebFocus';
 import { useAuth } from '@/providers/AuthProvider';
 import { Group, groupService, userService } from '@/services';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { globalStyles } from '../styles/globalStyles';
 
 const Page = () => {
 	const [gruposUsuario, setGruposUsuario] = useState<Group[]>([]);
 	const { session, nameUser } = useAuth();
 	const [loading, setLoading] = useState(false);
+	
+	useWebFocus();
 
 	useEffect(() => {
 		getUserGroups();
@@ -41,18 +44,17 @@ const Page = () => {
 	};
 
 	return (
-		<View style={{ backgroundColor: '#f0f0f0' }}>
-			<ScrollView style={{maxHeight:600, padding: 16, width: '90%', alignSelf: 'center'}} showsVerticalScrollIndicator={false}>
-				{gruposUsuario.map((grupo) => (
+		<View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#e4cff614', borderRadius: 12, paddingVertical: 8 }}>
+			<ScrollView style={{maxHeight:'80%', width: '100%', paddingHorizontal: 16}} showsVerticalScrollIndicator={false}>
+				{gruposUsuario.reverse().map((grupo) => (
 					<TouchableOpacity
 						key={grupo.id}
 						style={{
 							marginVertical: 8,
 							padding: 12,
-							backgroundColor: '#fff',
+							backgroundColor: '#ffffffff',
 							borderRadius: 8,
 							elevation: 2,
-							boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)',
 						}}
 						onPress={() => router.push({ pathname: `/(auth)/group/${grupo.id}/page` as any })}
 					>

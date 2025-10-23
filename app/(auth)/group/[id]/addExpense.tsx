@@ -2,8 +2,8 @@ import { useAuth } from '@/providers/AuthProvider';
 import { CreateExpenseData, expenseService } from '@/services';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Swal from 'sweetalert2';
+import { Alert, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { globalStyles } from '../../../../styles/globalStyles';
 
 const AddExpensePage = () => {
@@ -12,7 +12,7 @@ const AddExpensePage = () => {
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
-    const {nameUser} = useAuth();
+    const { nameUser } = useAuth();
 
     const addExpense = async () => {
         if (!amount || !description.trim() || !session?.user?.id) {
@@ -51,17 +51,19 @@ const AddExpensePage = () => {
                 return;
             }
 
-            Swal.fire({
-                title: "Expense added successfully",
-                text: "Refresh the group page to see the new expense.",
-                icon: "success"
+            Toast.show({
+                type: 'success',
+                text1: 'Expense added successfully',
+                text2: 'Refresh the group page to see the new expense.',
             });
-            router.back();
+            setTimeout(() => {
+                router.back();
+            }, 1200);
         } catch (error) {
-            Swal.fire({
-                title: "Error",
-                text: "An error occurred while adding the expense.",
-                icon: "error"
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'An error occurred while adding the expense.',
             });
         } finally {
             setLoading(false);
@@ -69,54 +71,55 @@ const AddExpensePage = () => {
     };
 
     return (
-        <View style={{padding:20}}>
-            
-            <View style={globalStyles.inputContainer}>
-                <Text style={globalStyles.label}>Amount (€)</Text>
-                <View style={globalStyles.inputWrapper}>
-                    <TextInput
-                        style={globalStyles.input}
-                        value={amount}
-                        onChangeText={setAmount}
-                        placeholder="0.00"
-                        placeholderTextColor="#999"
-                        keyboardType="decimal-pad"
-                    />
+        <View style={{ flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
+            <View style={{ padding: 16 }}>
+                <View style={globalStyles.inputContainer}>
+                    <Text style={globalStyles.label}>Amount (€)</Text>
+                    <View style={globalStyles.inputWrapper}>
+                        <TextInput
+                            style={globalStyles.input}
+                            value={amount}
+                            onChangeText={setAmount}
+                            placeholder="0.00"
+                            placeholderTextColor="#999"
+                            keyboardType="decimal-pad"
+                        />
+                    </View>
                 </View>
-            </View>
 
-            <View style={globalStyles.inputContainer}>
-                <Text style={globalStyles.label}>Description</Text>
-                <View style={globalStyles.inputWrapper}>
-                    <TextInput
-                        style={[globalStyles.input, { minHeight: 80 }]}
-                        value={description}
-                        onChangeText={setDescription}
-                        placeholder="What was the expense for?"
-                        placeholderTextColor="#999"
-                        multiline
-                        numberOfLines={3}
-                    />
+                <View style={globalStyles.inputContainer}>
+                    <Text style={globalStyles.label}>Description</Text>
+                    <View style={globalStyles.inputWrapper}>
+                        <TextInput
+                            style={[globalStyles.input, { minHeight: 80 }]}
+                            value={description}
+                            onChangeText={setDescription}
+                            placeholder="What was the expense for?"
+                            placeholderTextColor="#999"
+                            multiline
+                            numberOfLines={3}
+                        />
+                    </View>
                 </View>
-            </View>
 
-            <View style={{ justifyContent: 'center', alignItems: 'center' }} >
-                <TouchableOpacity
-                    style={[globalStyles.button, loading && globalStyles.disabledButton]}
-                    onPress={addExpense}
-                    disabled={loading}
-                >
-                    <Text style={globalStyles.buttonText}>
-                        {loading ? 'Adding...' : 'Add Expense'}
-                    </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                    style={globalStyles.button}
-                    onPress={() => router.back()}
-                >
-                    <Text style={globalStyles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }} >
+                    <TouchableOpacity
+                        style={[globalStyles.button, loading && globalStyles.disabledButton]}
+                        onPress={addExpense}
+                        disabled={loading}
+                    >
+                        <Text style={globalStyles.buttonText}>
+                            {loading ? 'Adding...' : 'Add Expense'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={globalStyles.button}
+                        onPress={() => router.back()}
+                    >
+                        <Text style={globalStyles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );

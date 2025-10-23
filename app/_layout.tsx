@@ -48,7 +48,6 @@ const HeaderMenu = () => {
             backgroundColor: '#fff',
             borderRadius: 8,
             elevation: 5,
-            boxShadow : '0 2px 4px rgba(0,0,0,0.2)',
             padding: 8,
             minWidth: 150,
           }}>

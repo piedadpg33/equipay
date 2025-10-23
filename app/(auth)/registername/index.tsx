@@ -12,6 +12,7 @@ export default function RegisterNameScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { session } = useAuth();
+  const {nameUser,setNameUser} = useAuth();
 
     const signUpSchema = z.object({
         name: z.string()
@@ -41,6 +42,9 @@ export default function RegisterNameScreen() {
         if (!result.success) {
             setError(result.error || 'Ha ocurrido un error');
             alert(result.error || 'Ha ocurrido un error');
+            return;
+        } else {
+            setNameUser?.(data.name);
         }
 
         
@@ -49,7 +53,7 @@ export default function RegisterNameScreen() {
     }
 
   return (
-    <View>
+    <View style={styles.container}>
         <Controller
             control={control}
             name="name"
@@ -63,7 +67,7 @@ export default function RegisterNameScreen() {
                             placeholder="Piedad"
                             placeholderTextColor={"#999"}
                             onChangeText={onChange}
-                            value={value}
+                            value={value ?? ''}
                         />
                     </View>
                     {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}

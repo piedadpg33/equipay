@@ -3,8 +3,8 @@ import { groupService } from '@/services/groupService';
 import { userService } from '@/services/userService';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Swal from 'sweetalert2';
+import { Platform, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { globalStyles } from '../../../styles/globalStyles';
 
 const CrearGrupoPage = () => {
@@ -33,12 +33,12 @@ const CrearGrupoPage = () => {
         getUsersNames();
 
     }, []);
-    
 
-        /**
-         * Crea un nuevo grupo 
-         * @returns 
-         */
+
+    /**
+     * Crea un nuevo grupo 
+     * @returns 
+     */
     const crearGrupo = async () => {
         try {
             setLoading(true);
@@ -70,7 +70,7 @@ const CrearGrupoPage = () => {
             // Add the group to the creator's groups
             setAddingMembers([nameUser || '']);
             const userAddedToGroup = await userService.addUserToGroup(session?.user?.id || '', newGroup.id);
-            
+
             if (!userAddedToGroup) {
                 setCreatingGroup(false);
                 return;
@@ -81,7 +81,7 @@ const CrearGrupoPage = () => {
             for (const memberName of selectedMembers) {
                 try {
                     setAddingMembers(prev => [...prev, memberName]);
-                    
+
                     // Get current user data by username
                     // Need to get user ID to add group to user's groups
                     const memberData = users.find(u => u.user_name === memberName);
@@ -103,19 +103,20 @@ const CrearGrupoPage = () => {
             setselectedMembers([]);
             setCreatingGroup(false);
             setAddingMembers([]);
-            Swal.fire({
-                title: "New Group Created!",
-                text: `The group ${groupName} has been created successfully.`,
-                icon: "success"
+            Toast.show({
+                type: 'success',
+                text1: 'New Group Created!',
             });
-            router.replace({ pathname: '/', params: { refresh: Date.now().toString() } });
+            setTimeout(() => {
+                router.replace({ pathname: '/', params: { refresh: Date.now().toString() } });
+            }, 1500);
         } catch (e) {
-            Swal.fire({
-                title: "Error",
-                text: "An error occurred while creating the group.",
-                icon: "error"
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'An error occurred while creating the group.',
             });
-        
+
             setCreatingGroup(false);
             setAddingMembers([]);
         } finally {
@@ -129,131 +130,133 @@ const CrearGrupoPage = () => {
     ) : [];
 
     return (
-    <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#f9f9f9' }}>
-        <Text style={globalStyles.label}>Name of group:</Text>
-        <View style={globalStyles.inputContainer}>
-            <View style={globalStyles.inputWrapper}>
-                <TextInput
-                    style={globalStyles.input}
-                    value={groupName}
-                    onChangeText={setgroupName}
-                    placeholder="Enter group name"
-                    placeholderTextColor="#999"
-                />
-            </View>
-        </View>
-        <Text style={{ marginTop: 16, fontWeight: 'bold' }}>Search members:</Text>
-        <View style={globalStyles.inputContainer}>
-            <View style={globalStyles.inputWrapper}>
-                <TextInput
-                    style={globalStyles.input}
-                    value={searchText}
-                    onChangeText={setSearchText}
-                    placeholder="Search by username"
-                    placeholderTextColor="#999"
-                />
-            </View>
-        </View>
+        <View style={{ flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
+            <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#f9f9f9' }}>
+                <Text style={globalStyles.label}>Name of group:</Text>
+                <View style={globalStyles.inputContainer}>
+                    <View style={globalStyles.inputWrapper}>
+                        <TextInput
+                            style={globalStyles.input}
+                            value={groupName}
+                            onChangeText={setgroupName}
+                            placeholder="Enter group name"
+                            placeholderTextColor="#999"
+                        />
+                    </View>
+                </View>
+                <Text style={{ marginTop: 16, fontWeight: 'bold' }}>Search members:</Text>
+                <View style={globalStyles.inputContainer}>
+                    <View style={globalStyles.inputWrapper}>
+                        <TextInput
+                            style={globalStyles.input}
+                            value={searchText}
+                            onChangeText={setSearchText}
+                            placeholder="Search by username"
+                            placeholderTextColor="#999"
+                        />
+                    </View>
+                </View>
 
-        {/* Mostrar miembros seleccionados */}
-        {selectedMembers.length > 0 && (
-            <View style={{ marginVertical: 8 }}>
-                <Text style={globalStyles.label}>
-                    Selected members ({selectedMembers.length}):
-                </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                    {selectedMembers.map((member) => (
-                        <View 
-                            key={member} 
-                            style={{ 
-                                backgroundColor: '#E3F2FD', 
-                                paddingHorizontal: 12, 
-                                paddingVertical: 6, 
-                                borderRadius: 16,
-                                flexDirection: 'row',
-                                alignItems: 'center'
-                            }}
-                        >
-                            <Text style={{ color: '#1976D2', fontSize: 14 }}>{member}</Text>
-                            <TouchableOpacity
-                                onPress={() => setselectedMembers(selectedMembers.filter(name => name !== member))}
-                                style={{ marginLeft: 8 }}
-                            >
-                                <Text style={{ color: '#1976D2', fontSize: 16, fontWeight: 'bold' }}>×</Text>
-                            </TouchableOpacity>
+                {/* Mostrar miembros seleccionados */}
+                {selectedMembers.length > 0 && (
+                    <View style={{ marginVertical: 8 }}>
+                        <Text style={globalStyles.label}>
+                            Selected members ({selectedMembers.length}):
+                        </Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                            {selectedMembers.map((member) => (
+                                <View
+                                    key={member}
+                                    style={{
+                                        backgroundColor: '#E3F2FD',
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 6,
+                                        borderRadius: 16,
+                                        flexDirection: 'row',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <Text style={{ color: '#1976D2', fontSize: 14 }}>{member}</Text>
+                                    <TouchableOpacity
+                                        onPress={() => setselectedMembers(selectedMembers.filter(name => name !== member))}
+                                        style={{ marginLeft: 8 }}
+                                    >
+                                        <Text style={{ color: '#1976D2', fontSize: 16, fontWeight: 'bold' }}>×</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
+                <View style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ccc', borderRadius: 4, backgroundColor: '#fff', marginVertical: 8 }}>
+                    {filteredusers.map((u) => (
+                        <View key={u.user_name} style={{ flexDirection: 'row', alignItems: 'center', padding: 8, borderBottomWidth: 1, borderBottomColor: '#eee' }}>
+                            <Switch
+                                value={selectedMembers.includes(u.user_name)}
+                                onValueChange={() => {
+                                    if (selectedMembers.includes(u.user_name)) {
+                                        setselectedMembers(selectedMembers.filter(name => name !== u.user_name));
+                                    } else {
+                                        setselectedMembers([...selectedMembers, u.user_name]);
+                                    }
+                                }}
+                                style={{ marginRight: 8 }}
+                            />
+                            <Text>{u.user_name || ''}</Text>
                         </View>
                     ))}
                 </View>
-            </View>
-        )}
+                {searchText && filteredusers.length === 0 ? (
+                    <Text style={{ textAlign: 'center', marginVertical: 8, color: '#666' }}>No results</Text>
+                ) : null}
 
-        <View style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ccc', borderRadius: 4, backgroundColor: '#fff', marginVertical: 8 }}>
-            {filteredusers.map((u) => (
-                <View key={u.user_name} style={{ flexDirection: 'row', alignItems: 'center', padding: 8, borderBottomWidth: 1, borderBottomColor: '#eee' }}>
-                    <Switch
-                        value={selectedMembers.includes(u.user_name)}
-                        onValueChange={() => {
-                            if (selectedMembers.includes(u.user_name)) {
-                                setselectedMembers(selectedMembers.filter(name => name !== u.user_name));
-                            } else {
-                                setselectedMembers([...selectedMembers, u.user_name]);
-                            }
-                        }}
-                        style={{ marginRight: 8 }}
-                    />
-                    <Text>{u.user_name||''}</Text>
+                {/* Show group creation progress */}
+                {creatingGroup && (
+                    <View style={{
+                        backgroundColor: '#F0F8FF',
+                        padding: 16,
+                        borderRadius: 8,
+                        marginVertical: 8,
+                        borderWidth: 1,
+                        borderColor: '#B0E0E6'
+                    }}>
+                        <Text style={{ fontWeight: 'bold', color: '#2E8B57', marginBottom: 8 }}>
+                            ⚙️ Creating group "{groupName}"...
+                        </Text>
+                        <Text style={{ color: '#2E8B57', marginBottom: 8 }}>
+                            Adding members to the group:
+                        </Text>
+                        {addingMembers.map((member, index) => (
+                            <Text key={index} style={{ color: '#2E8B57', marginLeft: 16 }}>
+                                ✓ {member}
+                            </Text>
+                        ))}
+                    </View>
+                )}
+
+                <View style={{ justifyContent: 'center', alignItems: 'center' }} >
+
+                    <TouchableOpacity
+                        style={globalStyles.button}
+                        onPress={crearGrupo}
+                        disabled={creatingGroup}
+                    >
+                        <Text style={globalStyles.buttonText}>
+                            {creatingGroup ? 'Creating group...' : 'Create group'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={{ ...globalStyles.button, backgroundColor: 'rgba(255, 0, 0, 0.25)' }}
+                        onPress={() => router.back()}
+                    >
+                        <Text style={globalStyles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
                 </View>
-            ))}
+            </ScrollView>
         </View>
-        {searchText && filteredusers.length === 0 ? (
-            <Text style={{ textAlign: 'center', marginVertical: 8, color: '#666' }}>No results</Text>
-        ) : null}
-
-        {/* Show group creation progress */}
-        {creatingGroup && (
-            <View style={{ 
-                backgroundColor: '#F0F8FF', 
-                padding: 16, 
-                borderRadius: 8, 
-                marginVertical: 8,
-                borderWidth: 1,
-                borderColor: '#B0E0E6'
-            }}>
-                <Text style={{ fontWeight: 'bold', color: '#2E8B57', marginBottom: 8 }}>
-                    ⚙️ Creating group "{groupName}"...
-                </Text>
-                <Text style={{ color: '#2E8B57', marginBottom: 8 }}>
-                    Adding members to the group:
-                </Text>
-                {addingMembers.map((member, index) => (
-                    <Text key={index} style={{ color: '#2E8B57', marginLeft: 16 }}>
-                        ✓ {member}
-                    </Text>
-                ))}
-            </View>
-        )}
-
-        <View style={{ justifyContent: 'center', alignItems: 'center' }} >
-
-            <TouchableOpacity
-                style={globalStyles.button}
-                onPress={crearGrupo}
-                disabled={creatingGroup}
-            >
-                <Text style={globalStyles.buttonText}>
-                    {creatingGroup ? 'Creating group...' : 'Create group'}
-                </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-                style={{ ...globalStyles.button, backgroundColor: 'rgba(255, 0, 0, 0.25)' }}
-                onPress={() => router.back()}
-            >
-                <Text style={globalStyles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-        </View>
-    </ScrollView>
-);
+    );
 
 };
 export default CrearGrupoPage;

@@ -5,7 +5,7 @@ import { globalStyles } from '@/styles/globalStyles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Dimensions, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 const GroupDetailPage = () => {
@@ -80,7 +80,7 @@ const GroupDetailPage = () => {
     // Calculate user payments for PieChart
     const userPayments = useMemo(() => {
         if (!grupo?.members || !Array.isArray(grupo.members)) return [];
-        
+
         return grupo.members.map((member: string) => {
             const memberExpenses = listExpenses.filter(exp => exp.sender === member);
             const totalPaid = memberExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
@@ -95,7 +95,7 @@ const GroupDetailPage = () => {
     // Dates for PieChart
     const pieData = useMemo(() => {
         const usersWithPayments = userPayments.filter(user => user.paid > 0);
-        
+
         return usersWithPayments.map((user, idx) => ({
             name: `${user.name} (${user.percentage.toFixed(1)}%)`,
             population: user.paid,
@@ -123,7 +123,8 @@ const GroupDetailPage = () => {
     }
 
     return (
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View style={{ flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 }}>
+
 
             {/* LuckyWheel modal */}
             <Modal
@@ -133,18 +134,23 @@ const GroupDetailPage = () => {
                 onRequestClose={() => setShowWheel(false)}
             >
                 <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 16 }}>
-                    <View style={{ backgroundColor: '#e5dcf1ff', borderRadius: 24, padding: 24, alignItems: 'center', width: '95%', maxWidth: 420, elevation: 8, boxShadow: '0 4px 8px rgba(0,0,0,0.2)', position: 'relative' }}>
+                    <LinearGradient
+                        colors={['#ffffffff', '#938fafff', '#fff']}
+                        start={[0, 0]}
+                        end={[1, 1]}
+                        style={{ borderRadius: 24, padding: 24, alignItems: 'center', width: '95%', maxWidth: 420, elevation: 8, position: 'relative' }}
+                    >
                         <TouchableOpacity
                             onPress={() => setShowWheel(false)}
-                            style={{ 
-                                position: 'absolute', 
-                                top: 12, 
-                                right: 12, 
-                                width: 32, 
-                                height: 32, 
-                                borderRadius: 16, 
-                                backgroundColor: 'rgba(0,0,0,0.2)', 
-                                justifyContent: 'center', 
+                            style={{
+                                position: 'absolute',
+                                top: 12,
+                                right: 12,
+                                width: 32,
+                                height: 32,
+                                borderRadius: 16,
+                                backgroundColor: 'rgba(0,0,0,0.2)',
+                                justifyContent: 'center',
                                 alignItems: 'center',
                                 zIndex: 10
                             }}
@@ -158,7 +164,7 @@ const GroupDetailPage = () => {
                                 setWinner(winnerName);
                             }}
                         />
-                    </View>
+                    </LinearGradient>
                 </View>
             </Modal>
 
@@ -171,9 +177,9 @@ const GroupDetailPage = () => {
 
             {/* Info de quién paga y ruleta */}
             {Array.isArray(grupo.members) && nextPayer && (
-                
+
                 <LinearGradient
-                    colors={['#A5D6A7', '#C8E6C9', '#E8F5E9']}
+                    colors={['#5e58d2ff', '#aabdd7ff', '#fbfffbff']}
                     start={[0, 0]}
                     end={[1, 1]}
                     style={{
@@ -188,13 +194,13 @@ const GroupDetailPage = () => {
                     }}
                 >
                     <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#388e3c' }}>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#ffffffff' }}>
                             Next to Pay:
                         </Text>
-                        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#388e3c' }}>
+                        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#ffffffff' }}>
                             {nextPayer.nombre}
                         </Text>
-                        <Text style={{ fontSize: 13, color: '#388e3c' }}>
+                        <Text style={{ fontSize: 13, color: '#faf6ffff' }}>
                             {Math.abs(nextPayer.balance).toFixed(2)} €
                         </Text>
                     </View>
@@ -255,45 +261,53 @@ const GroupDetailPage = () => {
                 </TouchableOpacity>
             </View>
 
-            
+
             {activeTab === 'Expenses' ? (
-                <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
-                    {listExpenses.length === 0 ? (
-                        <Text style={{ color: '#888', textAlign: 'center', marginVertical: 20 }}>
-                            No expenses recorded yet.
-                        </Text>
-                    ) : (
-                        listExpenses.map((exp) => (
-                            <View key={exp.id} style={{
-                                backgroundColor: '#fff',
-                                borderRadius: 8,
-                                padding: 12,
-                                marginBottom: 8,
-                                elevation: 1,
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                            }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                                        {Number(exp.amount).toFixed(2)} €
+                <>
+                    <ScrollView style={{ maxHeight: '50%' }} showsVerticalScrollIndicator={false}>
+                        {listExpenses.length === 0 ? (
+                            <Text style={{ color: '#888', textAlign: 'center', marginVertical: 20 }}>
+                                No expenses recorded yet.
+                            </Text>
+                        ) : (
+                            listExpenses.map((exp) => (
+                                <View key={exp.id} style={{
+                                    backgroundColor: '#fff',
+                                    borderRadius: 8,
+                                    padding: 12,
+                                    marginBottom: 8,
+                                    elevation: 1,
+                                }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#5a5080ff' }}>
+                                            {Number(exp.amount).toFixed(2)} €
+                                        </Text>
+                                        <Text style={{ fontSize: 14, color: '#666' }}>
+                                            {exp.sender}
+                                        </Text>
+                                    </View>
+                                    <Text style={{ fontSize: 14, color: '#787070ff', marginTop: 4 }}>
+                                        {exp.description}
                                     </Text>
-                                    <Text style={{ fontSize: 14, color: '#666' }}>
-                                        {exp.sender}
+                                    <Text style={{ fontSize: 12, color: '#999', marginTop: 4 }}>
+                                        {new Date(exp.created_at).toLocaleDateString()}
                                     </Text>
                                 </View>
-                                <Text style={{ fontSize: 14, color: '#333', marginTop: 4 }}>
-                                    {exp.description}
-                                </Text>
-                                <Text style={{ fontSize: 12, color: '#999', marginTop: 4 }}>
-                                    {new Date(exp.created_at).toLocaleDateString()}
-                                </Text>
-                            </View>
-                        ))
-                    )}
-                </ScrollView>
+                            ))
+                        )}
+                    </ScrollView>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 24 }}>
+                        <TouchableOpacity style={globalStyles.button}
+                            onPress={() => router.push(`/(auth)/group/${id}/addExpense` as any)}
+                        >
+                            <Text style={globalStyles.buttonText}>Add Expense</Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
             ) : null}
 
             {activeTab === 'Balances' && Array.isArray(grupo.members) ? (
-                <View style={{ marginTop: 16, alignItems: 'center' }}>
+                <ScrollView style={{ marginTop: 16,  maxHeight: '70%' }} showsVerticalScrollIndicator={false}>
                     {/* Graphical representation of user contributions */}
                     {pieData.length > 0 ? (
                         <>
@@ -302,7 +316,7 @@ const GroupDetailPage = () => {
                             </Text>
                             <PieChart
                                 data={pieData}
-                                width={Dimensions.get('window').width * 0.9}
+                                width={Platform.OS === 'web' ? Dimensions.get('window').width * 0.5 : Dimensions.get('window').width * 0.95}
                                 height={220}
                                 chartConfig={{
                                     color: () => '#333',
@@ -323,7 +337,6 @@ const GroupDetailPage = () => {
                                         borderRadius: 12,
                                         padding: 12,
                                         marginBottom: 8,
-                                        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)',
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
@@ -337,7 +350,7 @@ const GroupDetailPage = () => {
                                             </Text>
                                         </View>
                                         <View style={{ alignItems: 'flex-end' }}>
-                                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#007AFF' }}>
+                                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#5540cbff' }}>
                                                 {user.percentage.toFixed(1)}%
                                             </Text>
                                             {user.paid === 0 && (
@@ -355,7 +368,7 @@ const GroupDetailPage = () => {
                     )}
 
                     {/* List of final balances */}
-                    <ScrollView style={{ marginTop: 24, width: '100%', maxHeight: 300 }} showsVerticalScrollIndicator={false}>
+                    <View style={{ marginTop: 24, width: '100%', maxHeight: 300 }} >
                         <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
                             Final Balances:
                         </Text>
@@ -365,7 +378,6 @@ const GroupDetailPage = () => {
                                 borderRadius: 12,
                                 padding: 12,
                                 marginBottom: 10,
-                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 justifyContent: 'space-between'
@@ -376,19 +388,14 @@ const GroupDetailPage = () => {
                                 </Text>
                             </View>
                         ))}
-                    </ScrollView>
-                </View>
+                    </View>
+                </ScrollView>
             ) : null}
 
-                            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 24 }}>
-                    <TouchableOpacity style={globalStyles.button}
-                        onPress={() => router.push(`/(auth)/group/${id}/addExpense` as any)}
-                    >
-                        <Text style={globalStyles.buttonText}>Add Expense</Text>
-                    </TouchableOpacity>
-                </View>
 
-        </ScrollView>
+
+
+        </View>
     );
 };
 

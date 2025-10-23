@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const colors = {
   primary: '#007AFF',
@@ -30,7 +30,9 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     padding: 20,
+    width: Platform.OS === 'web' ? '50%' : '100%',
   },
   title: {
     fontSize: 24,
@@ -74,15 +76,13 @@ export const globalStyles = StyleSheet.create({
     marginTop: 20,
     width: '100%',
     maxWidth: 300,
-    boxShadow: '0px 4px 12px rgba(0, 122, 255, 0.3)',
-    elevation: 8,
+
   },
   googleButton: {
     backgroundColor: 'rgba(66, 133, 244, 0.35)',
     borderWidth: 1.5,
     borderColor: 'rgba(255, 255, 255, 0.3)',
-    boxShadow: '0px 4px 12px rgba(66, 133, 244, 0.3)',
-    elevation: 8,
+
   },
   googleIcon: {
     marginRight: 10,

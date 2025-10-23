@@ -1,5 +1,6 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import LuckyWheel from '../components/LuckyWheel';
 import { globalStyles } from '../styles/globalStyles';
 
@@ -44,143 +45,132 @@ const WheelPage = () => {
   };
 
   return (
-    <View style={{ padding: 30, flex: 1, backgroundColor: '#f0f0f0', width: '70%', alignSelf: 'center' }}>
-      <ScrollView 
-        contentContainerStyle={{ 
-          padding: 16, 
-          alignItems: 'center',
-          minHeight: '100%'
-        }}
-        showsVerticalScrollIndicator={false}
-      >
+    <View style={{ padding: 30, flex: 1, width: Platform.OS === 'web' ? '50%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12 }}>
 
-        {/* Add Name Section */}
-        <View style={globalStyles.inputContainer}>
-          <View style={globalStyles.inputWrapper}>
-            <TextInput
-              style={globalStyles.input}
-              value={newName}
-              onChangeText={setNewName}
-              placeholder="Enter a name..."
-              placeholderTextColor="#999"
-              maxLength={15}
-              onSubmitEditing={addName}
-            />
-          </View>
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+
+      {/* Add Name Section */}
+      <View style={globalStyles.inputContainer}>
+        <View style={globalStyles.inputWrapper}>
+          <TextInput
+            style={globalStyles.input}
+            value={newName}
+            onChangeText={setNewName}
+            placeholder="Enter a name..."
+            placeholderTextColor="#999"
+            maxLength={15}
+            onSubmitEditing={addName}
+          />
+        </View>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           <TouchableOpacity
             style={[globalStyles.button, { marginTop: 10 }]}
             onPress={addName}
           >
             <Text style={globalStyles.buttonText}>Add Name</Text>
           </TouchableOpacity>
-          </View>
         </View>
+      </View>
 
-        {/* Names List */}
-        <View style={{ width: '100%', marginVertical: 20 }}>
-          <Text style={[globalStyles.label, { textAlign: 'center', marginBottom: 15 }]}>
-            Names in Wheel ({names.length}/12)
-          </Text>
-          
-          {names.length === 0 ? (
-            <View style={{
-              padding: 20,
-              backgroundColor: '#fff',
-              borderRadius: 12,
-              alignItems: 'center',
-              borderStyle: 'dashed',
-              borderWidth: 2,
-              borderColor: '#ddd'
-            }}>
-              <Text style={{ color: '#999', fontSize: 16 }}>
-                No names added yet
-              </Text>
-              <Text style={{ color: '#999', fontSize: 14, marginTop: 5 }}>
-                Add some names to get started!
-              </Text>
-            </View>
-          ) : (
-            <View style={{
-              backgroundColor: '#fff',
-              borderRadius: 12,
-              padding: 15,
-              elevation: 2,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.1,
-              shadowRadius: 2,
-            }}>
-              {names.map((name, index) => (
-                <View
-                  key={index}
+      {/* Names List */}
+      <View style={{ width: '100%', marginVertical: 20 }}>
+        <Text style={[globalStyles.label, { textAlign: 'center', marginBottom: 15 }]}>
+          Names in Wheel ({names.length}/12)
+        </Text>
+
+        {names.length === 0 ? (
+          <View style={{
+            padding: 20,
+            backgroundColor: '#fff',
+            borderRadius: 12,
+            alignItems: 'center',
+            borderStyle: 'dashed',
+            borderWidth: 2,
+            borderColor: '#ddd'
+          }}>
+            <Text style={{ color: '#999', fontSize: 16 }}>
+              No names added yet
+            </Text>
+            <Text style={{ color: '#999', fontSize: 14, marginTop: 5 }}>
+              Add some names to get started!
+            </Text>
+          </View>
+        ) : (
+          <View style={{
+            backgroundColor: '#fff',
+            borderRadius: 12,
+            padding: 15,
+            elevation: 2
+          }}>
+            {names.map((name, index) => (
+              <View
+                key={index}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingVertical: 12,
+                  paddingHorizontal: 10,
+                  backgroundColor: index % 2 === 0 ? '#f8f9fa' : '#fff',
+                  borderRadius: 8,
+                  marginVertical: 2,
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: '500', color: '#333' }}>
+                  {index + 1}. {name}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => removeName(index)}
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingVertical: 12,
+                    backgroundColor: '#86779fff',
                     paddingHorizontal: 10,
-                    backgroundColor: index % 2 === 0 ? '#f8f9fa' : '#fff',
-                    borderRadius: 8,
-                    marginVertical: 2,
+                    paddingVertical: 5,
+                    borderRadius: 15,
                   }}
                 >
-                  <Text style={{ fontSize: 16, fontWeight: '500', color: '#333' }}>
-                    {index + 1}. {name}
+                  <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>
+                    Remove
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => removeName(index)}
-                    style={{
-                      backgroundColor: '#ff4757',
-                      paddingHorizontal: 10,
-                      paddingVertical: 5,
-                      borderRadius: 15,
-                    }}
-                  >
-                    <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>
-                      Remove
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
 
-        {/* Action Buttons */}
-        <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
+      {/* Action Buttons */}
+      <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
+        <TouchableOpacity
+          style={[
+            globalStyles.button,
+            {
+              backgroundColor: names.length < 2 ? '#ccc' : 'rgba(0, 122, 255, 0.35)',
+              marginBottom: 15,
+            }
+          ]}
+          onPress={spinWheel}
+          disabled={names.length < 2}
+        >
+          <Text style={globalStyles.buttonText}>
+            🎰 Spin the Wheel!
+          </Text>
+        </TouchableOpacity>
+
+        {names.length > 0 && (
           <TouchableOpacity
             style={[
               globalStyles.button,
               {
-                backgroundColor: names.length < 2 ? '#ccc' : 'rgba(0, 122, 255, 0.35)',
-                marginBottom: 15,
+                backgroundColor: 'rgba(47, 24, 82, 0.35)',
+                borderColor: 'rgba(255, 255, 255, 0.3)',
               }
             ]}
-            onPress={spinWheel}
-            disabled={names.length < 2}
+            onPress={clearAllNames}
           >
-            <Text style={globalStyles.buttonText}>
-              🎰 Spin the Wheel!
-            </Text>
+            <Text style={globalStyles.buttonText}>Clear All Names</Text>
           </TouchableOpacity>
+        )}
+      </View>
 
-          {names.length > 0 && (
-            <TouchableOpacity
-              style={[
-                globalStyles.button,
-                {
-                  backgroundColor: 'rgba(255, 71, 87, 0.35)',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                }
-              ]}
-              onPress={clearAllNames}
-            >
-              <Text style={globalStyles.buttonText}>Clear All Names</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </ScrollView>
 
       {/* Wheel Modal */}
       <Modal
@@ -196,18 +186,12 @@ const WheelPage = () => {
           alignItems: 'center',
           padding: 20,
         }}>
-          <View style={{
-            backgroundColor: '#fff',
-            borderRadius: 20,
-            padding: 20,
-            alignItems: 'center',
-            maxWidth: '95%',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          }}>
+          <LinearGradient
+            colors={['#ffffffff', '#938fafff', '#fff']}
+            start={[0, 0]}
+            end={[1, 1]}
+            style={{ borderRadius: 24, padding: 24, alignItems: 'center', width: '95%', maxWidth: 420, elevation: 8, position: 'relative' }}
+          >
             <Text style={{
               fontSize: 24,
               fontWeight: 'bold',
@@ -215,28 +199,32 @@ const WheelPage = () => {
               textAlign: 'center',
               color: '#333'
             }}>
-               Lucky Wheel
+              Lucky Wheel
             </Text>
 
             <LuckyWheel
               segments={names}
-                onFinish={() => {}}
+              onFinish={() => { }}
             />
 
             <TouchableOpacity
-              style={[
-                globalStyles.button,
-                {
-                  marginTop: 20,
-                  backgroundColor: 'rgba(108, 117, 125, 0.35)',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                }
-              ]}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 10
+              }}
               onPress={closeWheel}
             >
-              <Text style={globalStyles.buttonText}>Close</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>×</Text>
             </TouchableOpacity>
-          </View>
+          </LinearGradient>
         </View>
       </Modal>
     </View>

@@ -1,10 +1,11 @@
 import { Stack } from "expo-router";
+import Toast from 'react-native-toast-message';
 
 
 
 export default function AuthLayout() {
   return (
-
+    <>
       <Stack
         screenOptions={{
           headerStyle: {
@@ -19,21 +20,21 @@ export default function AuthLayout() {
         }}
       >
         {/* pages without header */}
-        <Stack.Screen 
-          name="signin/index" 
-          options={{ headerShown: false }} 
+        <Stack.Screen
+          name="signin/index"
+          options={{ headerShown: false }}
         />
-        <Stack.Screen 
-          name="signup/index" 
-          options={{ headerShown: false }} 
+        <Stack.Screen
+          name="signup/index"
+          options={{ headerShown: false }}
         />
 
         {/* pages with header */}
-        <Stack.Screen 
-          name="newgroup/index" 
-          options={{ 
+        <Stack.Screen
+          name="newgroup/index"
+          options={{
             title: 'New Group',
-          }} 
+          }}
         />
 
         <Stack.Screen
@@ -42,7 +43,7 @@ export default function AuthLayout() {
             title: 'Group',
           }}
         />
-        
+
         <Stack.Screen
           name="group/[id]/addExpense"
           options={{
@@ -57,6 +58,7 @@ export default function AuthLayout() {
           }}
         />
       </Stack>
-
+      <Toast />
+    </>
   );
 }

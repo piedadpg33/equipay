@@ -75,7 +75,7 @@ export default function SignIn() {
                                     placeholder="you@example.com"
                                     placeholderTextColor={"#999"}
                                     onChangeText={onChange}
-                                    value={value}
+                                    value={value ?? ''}
                                 />
                             </View>
                         </View>
@@ -97,7 +97,7 @@ export default function SignIn() {
                                     placeholderTextColor={"#999"}
                                     secureTextEntry
                                     onChangeText={onChange}
-                                    value={value}
+                                    value={value ?? ''}
                                 />
 
                             </View>

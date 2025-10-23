@@ -15,6 +15,7 @@ type AuthData = {
     loading: boolean;
     session: Session | null;
     nameUser?: string | null;
+    setNameUser?: (name: string | null) => void;
 };
 
 const AuthContext = createContext<AuthData>({
@@ -92,7 +93,6 @@ export default function AuthProvider(props: Props) {
 
         // Check if app was opened with a deep link
         Linking.getInitialURL().then((url) => {
-            console.log('Initial URL:', url);
             if (url) {
                 handleDeepLink(url);
             }
@@ -100,7 +100,6 @@ export default function AuthProvider(props: Props) {
 
         
         const { data: authListener } = supabase.auth.onAuthStateChange(async(_,session) => {
-        console.log("Auth state changed:", session);
         setSession(session);
         setLoading(false);
 
@@ -108,15 +107,14 @@ export default function AuthProvider(props: Props) {
         
         // If there is a UUID
         if (uuid) {
-            console.log("Session user ID:", uuid);
             // Search the name of the user in the database
             const user =  userService.getUserById(uuid)
                 .then(user=>
                 {
-                    if (session && user) {
+                    if (session && user?.user_name) {
                         setNameUser(user.user_name);
                         router.replace("/");
-                    } else if (session && !user) {
+                    } else {
                         router.replace("/registername"); 
                     }
                 }
@@ -135,7 +133,7 @@ export default function AuthProvider(props: Props) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ loading, session, nameUser }}>
+        <AuthContext.Provider value={{ loading, session, nameUser, setNameUser }}>
             {props.children}
         </AuthContext.Provider>
     );

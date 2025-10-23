@@ -14,6 +14,8 @@ export interface LuckyWheelProps {
 }
 
 const colors = [
+  '#c77ac7ff', '#76b9e7ff', '#325d71ff',
+  '#FFCCBC', '#D7CCC8', '#CFD8DC', '#F8BBD0', '#DCEDC8', '#B3E5FC', '#D1C4E9', '#FFF9C4', '#B2DFDB', '#F0F4C3', '#B3E5FC', '#E1BEE7',
   '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#F44336', '#8BC34A', '#00BCD4', '#FFC107',
   '#E91E63', '#3F51B5', '#009688', '#FF5722', '#673AB7', '#CDDC39', '#03A9F4', '#FFEB3B', '#9C27B0', '#4CAF50',
   '#2196F3', '#FF9800', '#795548', '#607D8B', '#FFCDD2', '#C8E6C9', '#BBDEFB', '#D1C4E9', '#FFF9C4', '#B2DFDB', '#F0F4C3', '#B3E5FC', '#E1BEE7',
