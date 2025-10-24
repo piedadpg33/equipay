@@ -29,27 +29,28 @@ export default function RegisterNameScreen() {
 
     
     const onSubmit = async (data: SignUpForm) => {
-        setLoading(true);
-        setError(null);
+            try {
+            setLoading(true);
+            setError(null);
 
-        const signUpData: SignUpData = {
-            name: data.name,
-            email: session?.user.email || '',
-        };
+            const signUpData: SignUpData = {
+                name: data.name,
+                email: session?.user.email || '',
+            };
 
-        const result = await authService.signUpWithGoogle(signUpData,session);
+            const result = await authService.signUpWithGoogle(signUpData,session);
+            if (result.success) {
+                setNameUser?.(data.name);
+            } else {
+                setError(result.error || 'Sign up failed. Please try again.');
+            }
+        } catch (error) {
+            setError('Error during sign up. Please try again.');
+            
+        } finally {
 
-        if (!result.success) {
-            setError(result.error || 'Ha ocurrido un error');
-            alert(result.error || 'Ha ocurrido un error');
-            return;
-        } else {
-            setNameUser?.(data.name);
+            setLoading(false);
         }
-
-        
-
-        setLoading(false);
     }
 
   return (
