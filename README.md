@@ -24,7 +24,7 @@
 
 ## Usage
 
-[Go to Equipay web page](https://vercel.com/piedads-projects-9c7b6f4e/equipay)
+[Go to Equipay web page](https://equipay-xi.vercel.app/)
 
 1. Sign up
 2. Create a group and invite your friends.
@@ -72,7 +72,7 @@ Piedad P.
 
 ## Uso
 
-[Ir a la página web de Equipay](https://vercel.com/piedads-projects-9c7b6f4e/equipay)
+[Ir a la página web de Equipay](https://equipay-xi.vercel.app/)
 
 
 1. Regístrate
