@@ -23,25 +23,7 @@ export interface Balance {
 }
 
 export const expenseService = {
-  /**
-   * Get all expenses for a group
-   */
-  async getExpensesByGroupId(groupId: number): Promise<Expense[]> {
-    try {
-      const { data, error } = await supabase
-        .rpc('get_expenses_by_group', { group_id_input: groupId });
 
-      if (error) {
-        console.error('Error fetching expenses:', error);
-        return [];
-      }
-
-      return data || [];
-    } catch (error) {
-      console.error('Error in getExpensesByGroupId:', error);
-      return [];
-    }
-  },
 
   /**
    * Create a new expense
@@ -81,54 +63,6 @@ export const expenseService = {
   },
 
 
-  /**
-   * Calculate balances for group members based on expenses
-   */
-  calculateBalances(members: string[], expenses: Expense[]): Balance[] {
-    const balances: Record<string, number> = {};
-    
-    // Initialize balances to 0
-    members.forEach(member => { 
-      balances[member] = 0; 
-    });
 
-    // Add what each person has paid
-    expenses.forEach(expense => {
-      if (expense.sender && typeof expense.amount === 'number') {
-        balances[expense.sender] = (balances[expense.sender] || 0) + Number(expense.amount);
-      }
-    });
 
-    // Calculate average per person
-    const total = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
-    const average = members.length > 0 ? total / members.length : 0;
-
-    // Calculate final balance (what they paid - what they should pay)
-    return members.map(member => ({
-      nombre: member,
-      balance: Number((balances[member] - average).toFixed(2))
-    }));
-  },
-
-  /**
-   * Determine who should pay next based on balances
-   */
-  getWhoPays(balances: Balance[]): Balance | null {
-    if (balances.length === 0) return null;
-    
-    const minBalance = Math.min(...balances.map(b => b.balance));
-    const debtors = balances.filter(b => b.balance === minBalance && b.balance < 0);
-    
-    if (debtors.length === 0) return null;
-    
-    // If there's a tie, choose randomly
-    return debtors[Math.floor(Math.random() * debtors.length)];
-  },
-
-  /**
-   * Get total expenses amount for a group
-   */
-  getTotalExpenses(expenses: Expense[]): number {
-    return expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
-  }
 };

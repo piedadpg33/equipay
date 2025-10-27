@@ -95,6 +95,22 @@ export const groupService = {
     }
   },
 
+async getGroupSummary(groupId: number) {
+  try {
+    const { data, error } = await supabase.rpc('get_group_summary', { group_id_param: groupId });
+    if (error) {
+      console.error('Error in get summary:', error);
+      return null;
+    }
+    return data;
+  } catch (error) {
+    console.error('Exception in getGroupSummary:', error);
+    return null;
+  }
+},
+
+
+
 
 
 };
