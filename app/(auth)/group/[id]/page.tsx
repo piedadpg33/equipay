@@ -330,7 +330,7 @@ const GroupDetailPage = () => {
             ) : null}
 
             {activeTab === 'Balances' && Array.isArray(grupo.members) ? (
-                <ScrollView style={{ marginTop: 16, maxHeight: '70%' }} showsVerticalScrollIndicator={false}>
+                <ScrollView style={{ marginTop: 16 }} showsVerticalScrollIndicator={false}>
                     {/* Graphical representation of user contributions */}
                     {pieData.length > 0 ? (
                         <>
@@ -353,7 +353,7 @@ const GroupDetailPage = () => {
                                 hasLegend={true}
                             />
                             {/* Detailed Breakdown */}
-                            <ScrollView style={{ marginTop: 16, width: '100%', maxHeight: 300 }} showsVerticalScrollIndicator={false}>
+                            <View style={{ marginTop: 16, width: '100%' }} >
                                 {userPayments.map((user, idx) => (
                                     <View key={user.name} style={{
                                         backgroundColor: '#f7f7fa',
@@ -384,14 +384,14 @@ const GroupDetailPage = () => {
                                         </View>
                                     </View>
                                 ))}
-                            </ScrollView>
+                            </View>
                         </>
                     ) : (
                         <Text style={{ color: '#888' }}>{t('groupDetail.noExpensesChart')}</Text>
                     )}
 
                     {/* List of final balances */}
-                    <View style={{ marginTop: 24, width: '100%', maxHeight: 300 }} >
+                    <View style={{ marginTop: 24, width: '100%' }} >
                         <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
                             {t('groupDetail.finalBalances')}
                         </Text>

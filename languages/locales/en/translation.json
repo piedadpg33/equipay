@@ -45,7 +45,7 @@
     "balance": "Balance: {{balance}}",
     "youAreOwed": "you are owed {{amount}}",
     "youShouldPay": "you should pay {{amount}}",
-    "whoPaysNext": "Who Pays Next?",
+    "whoPaysNext": "Who Pays?",
     "nextToPay": "Next to Pay:",
     "amountToPay": "{{amount}}",
     "expensesTab": "Expenses",

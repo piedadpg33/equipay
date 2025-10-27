@@ -114,8 +114,8 @@ const HeaderMenu = () => {
               onPress={toggleLanguage}
               style={{ paddingVertical: 12, paddingHorizontal: 8, flexDirection: 'row', alignItems: 'center' }}
             >
-              <Text style={{ fontSize: 24 }}>
-                {i18n.language === 'es' ? '🇺🇸' : '🇪🇸'}
+              <Text style={{ fontSize: 14 }}>
+                {i18n.language === 'es' ? 'EN >' : 'ES >'}
               </Text>
             </TouchableOpacity>
           </View>
