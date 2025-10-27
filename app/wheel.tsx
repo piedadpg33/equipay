@@ -1,5 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Modal, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import LuckyWheel from '../components/LuckyWheel';
 import { globalStyles } from '../styles/globalStyles';
@@ -8,14 +9,15 @@ const WheelPage = () => {
   const [names, setNames] = useState<string[]>([]);
   const [newName, setNewName] = useState('');
   const [showWheel, setShowWheel] = useState(false);
+  const { t } = useTranslation();
 
   const addName = () => {
     if (newName.trim() === '') {
-      Alert.alert('Error', 'Please enter a name');
+      Alert.alert(t('wheel.errorTitle'), t('wheel.enterName'));
       return;
     }
     if (names.length >= 12) {
-      Alert.alert('Error', 'Maximum 12 names allowed');
+      Alert.alert(t('wheel.errorTitle'), t('wheel.maxNames'));
       return;
     }
     setNames([...names, newName.trim()]);
@@ -33,7 +35,7 @@ const WheelPage = () => {
 
   const spinWheel = () => {
     if (names.length < 2) {
-      Alert.alert('Error', 'You need at least 2 names to spin the wheel');
+      Alert.alert(t('wheel.errorTitle'), t('wheel.needTwoNames'));
       return;
     }
     setShowWheel(true);
@@ -55,7 +57,7 @@ const WheelPage = () => {
             style={globalStyles.input}
             value={newName}
             onChangeText={setNewName}
-            placeholder="Enter a name..."
+            placeholder={t('wheel.namePlaceholder')}
             placeholderTextColor="#999"
             maxLength={15}
             onSubmitEditing={addName}
@@ -66,7 +68,7 @@ const WheelPage = () => {
             style={[globalStyles.button, { marginTop: 10 }]}
             onPress={addName}
           >
-            <Text style={globalStyles.buttonText}>Add Name</Text>
+            <Text style={globalStyles.buttonText}>{t('wheel.addName')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -74,7 +76,7 @@ const WheelPage = () => {
       {/* Names List */}
       <View style={{ width: '100%', marginVertical: 20 }}>
         <Text style={[globalStyles.label, { textAlign: 'center', marginBottom: 15 }]}>
-          Names in Wheel ({names.length}/12)
+          {t('wheel.namesInWheel')} ({names.length}/12)
         </Text>
 
         {names.length === 0 ? (
@@ -88,10 +90,10 @@ const WheelPage = () => {
             borderColor: '#ddd'
           }}>
             <Text style={{ color: '#999', fontSize: 16 }}>
-              No names added yet
+              {t('wheel.noNames')}
             </Text>
             <Text style={{ color: '#999', fontSize: 14, marginTop: 5 }}>
-              Add some names to get started!
+              {t('wheel.addSomeNames')}
             </Text>
           </View>
         ) : (
@@ -128,7 +130,7 @@ const WheelPage = () => {
                   }}
                 >
                   <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>
-                    Remove
+                    {t('wheel.remove')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -151,8 +153,9 @@ const WheelPage = () => {
           disabled={names.length < 2}
         >
           <Text style={globalStyles.buttonText}>
-            🎰 Spin the Wheel!
+            🎰 {t('wheel.spin')}
           </Text>
+
         </TouchableOpacity>
 
         {names.length > 0 && (
@@ -166,7 +169,7 @@ const WheelPage = () => {
             ]}
             onPress={clearAllNames}
           >
-            <Text style={globalStyles.buttonText}>Clear All Names</Text>
+            <Text style={globalStyles.buttonText}>{t('wheel.clearAll')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -199,7 +202,7 @@ const WheelPage = () => {
               textAlign: 'center',
               color: '#333'
             }}>
-              Lucky Wheel
+              {t('wheel.luckyWheel')}
             </Text>
 
             <LuckyWheel

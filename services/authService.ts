@@ -157,6 +157,15 @@ export const authService = {
       });
 
       if (error) {
+        if (
+          error.message === 'Invalid login credentials' ||
+          error.message?.toLowerCase().includes('invalid login credentials')
+        ) {
+          return {
+            success: false,
+            error: 'INVALID_CREDENTIALS'
+          };
+        }
         throw error;
       }
 

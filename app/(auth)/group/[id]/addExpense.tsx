@@ -2,6 +2,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { CreateExpenseData, expenseService } from '@/services';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { globalStyles } from '../../../../styles/globalStyles';
@@ -13,16 +14,17 @@ const AddExpensePage = () => {
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
     const { nameUser } = useAuth();
+    const { t } = useTranslation();
 
     const addExpense = async () => {
         if (!amount || !description.trim() || !session?.user?.id) {
-            Alert.alert('Error', 'Please fill in all fields');
+            Alert.alert(t('addExpense.errorTitle'), t('addExpense.fillAllFields'));
             return;
         }
 
         const numAmount = parseFloat(amount);
         if (isNaN(numAmount) || numAmount <= 0) {
-            Alert.alert('Error', 'Please enter a valid amount');
+            Alert.alert(t('addExpense.errorTitle'), t('addExpense.validAmount'));
             return;
         }
 
@@ -31,7 +33,7 @@ const AddExpensePage = () => {
         try {
             // Get current user's name
             if (!nameUser) {
-                Alert.alert('Error', 'Could not identify user');
+                Alert.alert(t('addExpense.errorTitle'), t('addExpense.couldNotIdentifyUser'));
                 return;
             }
 
@@ -47,14 +49,14 @@ const AddExpensePage = () => {
             const result = await expenseService.createExpense(expenseData);
 
             if (!result.success) {
-                Alert.alert('Error', result.error || 'Could not add expense');
+                Alert.alert(t('addExpense.errorTitle'), result.error || t('addExpense.couldNotAddExpense'));
                 return;
             }
 
             Toast.show({
                 type: 'success',
-                text1: 'Expense added successfully',
-                text2: 'Refresh the group page to see the new expense.',
+                text1: t('addExpense.successTitle'),
+                text2: t('addExpense.successDescription'),
             });
             setTimeout(() => {
                 router.back();
@@ -62,8 +64,8 @@ const AddExpensePage = () => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: 'Error',
-                text2: 'An error occurred while adding the expense.',
+                text1: t('addExpense.errorTitle'),
+                text2: t('addExpense.errorOccurred'),
             });
         } finally {
             setLoading(false);
@@ -74,13 +76,13 @@ const AddExpensePage = () => {
         <View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
             <View style={{ padding: 16 }}>
                 <View style={globalStyles.inputContainer}>
-                    <Text style={globalStyles.label}>Amount (€)</Text>
+                    <Text style={globalStyles.label}>{t('addExpense.amountLabel')}</Text>
                     <View style={globalStyles.inputWrapper}>
                         <TextInput
                             style={globalStyles.input}
                             value={amount}
                             onChangeText={setAmount}
-                            placeholder="0.00"
+                            placeholder={t('addExpense.amountPlaceholder')}
                             placeholderTextColor="#999"
                             keyboardType="decimal-pad"
                         />
@@ -88,13 +90,13 @@ const AddExpensePage = () => {
                 </View>
 
                 <View style={globalStyles.inputContainer}>
-                    <Text style={globalStyles.label}>Description</Text>
+                    <Text style={globalStyles.label}>{t('addExpense.descriptionLabel')}</Text>
                     <View style={globalStyles.inputWrapper}>
                         <TextInput
                             style={[globalStyles.input, { minHeight: 80 }]}
                             value={description}
                             onChangeText={setDescription}
-                            placeholder="What was the expense for?"
+                            placeholder={t('addExpense.descriptionPlaceholder')}
                             placeholderTextColor="#999"
                             multiline
                             numberOfLines={3}
@@ -109,7 +111,7 @@ const AddExpensePage = () => {
                         disabled={loading}
                     >
                         <Text style={globalStyles.buttonText}>
-                            {loading ? 'Adding...' : 'Add Expense'}
+                            {loading ? t('addExpense.adding') : t('addExpense.addExpenseButton')}
                         </Text>
                     </TouchableOpacity>
 
@@ -117,7 +119,7 @@ const AddExpensePage = () => {
                         style={globalStyles.button}
                         onPress={() => router.back()}
                     >
-                        <Text style={globalStyles.buttonText}>Cancel</Text>
+                        <Text style={globalStyles.buttonText}>{t('addExpense.cancel')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

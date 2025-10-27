@@ -3,6 +3,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Group, groupService, userService } from '@/services';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { globalStyles } from '../styles/globalStyles';
 
@@ -12,6 +13,8 @@ const Page = () => {
 	const [loading, setLoading] = useState(false);
 	
 	useWebFocus();
+
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		getUserGroups();
@@ -48,7 +51,7 @@ const Page = () => {
 			<ScrollView style={{maxHeight:'80%', width: '100%', paddingHorizontal: 16}} showsVerticalScrollIndicator={false}>
 				   {gruposUsuario.length === 0 ? (
 					   <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16, color: '#555' }}>
-						   You are not part of any groups yet. Create or join a group to get started!
+						   {t('noGroups')}
 					   </Text>
 				   ) : (
 					   gruposUsuario.slice().reverse().map((grupo) => (
@@ -74,7 +77,7 @@ const Page = () => {
 					style={globalStyles.button}
 					onPress={() => router.push('/(auth)/newgroup/' as any)}
 				>
-					<Text style={globalStyles.buttonText}>Create Group</Text>
+					<Text style={globalStyles.buttonText}>{t('createGroup')}</Text>
 				</TouchableOpacity>
 			</View>
 

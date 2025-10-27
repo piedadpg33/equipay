@@ -1,15 +1,18 @@
 import LuckyWheel from '@/components/LuckyWheel';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
-import { Balance, Expense, expenseService, Group, groupService } from '@/services';
+import { Balance, Expense, Group, groupService } from '@/services';
 import { globalStyles } from '@/styles/globalStyles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Dimensions, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 const GroupDetailPage = () => {
     const [showWheel, setShowWheel] = useState(false);
+    const { t } = useTranslation();
     const [winner, setWinner] = useState<string | null>(null);
     const { id } = useLocalSearchParams();
     const { session, nameUser } = useAuth();
@@ -38,37 +41,53 @@ const GroupDetailPage = () => {
 
             setGrupo(grupoData);
 
-            // Get group expenses
-            const expenses = await expenseService.getExpensesByGroupId(groupId);
-            setListExpenses(expenses);
+        const data = await groupService.getGroupSummary(groupId);
 
-            // Calculate totals and balances
-            const total = expenseService.getTotalExpenses(expenses);
-            setTotalExpenses(total);
+        setListExpenses(data.expenses);
+        setTotalExpenses(data.total);
+        setBalances(data.balances);
 
-            const miembros = Array.isArray(grupoData.members) ? grupoData.members : [];
-            const calculatedBalances = expenseService.calculateBalances(miembros, expenses);
-            setBalances(calculatedBalances);
+        //Next payer
+        setNextPayer(data.balances.find((b: any) => b.nombre === data.next_payer) || null);
 
-            // Determine who should pay
-            setNextPayer(expenseService.getWhoPays(calculatedBalances));
+        // Your balance
+        if (nameUser) {
+            const userBalance = data.balances.find((b: any) => b.nombre === nameUser);
+            setYourBalance(userBalance ? userBalance.balance : 0);
+        }
 
-            // Get current user's balance
-            if (nameUser) {
-                const userBalance = calculatedBalances.find(b => b.nombre === nameUser);
-                setYourBalance(userBalance ? userBalance.balance : 0);
-            }
-
-        } catch (error) {
-            console.error('Error in getExpenses:', error);
-        } finally {
-            setLoading(false);
+    } catch (error) {
+        console.error('Error in getExpenses:', error);
+    } finally {
+        setLoading(false);
         }
     };
 
     useEffect(() => {
         getExpenses();
-    }, []);
+
+        // Set up real-time subscription to expenses table
+        const channel = supabase
+            .channel('expenses-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'expenses',
+                    filter: `group_id=eq.${id}`
+                },
+                (payload) => {
+                    getExpenses();
+                }
+            )
+            .subscribe();
+
+        // Clean up subscription on unmount
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [id, session?.user?.id, nameUser]);
 
     // Pastel colors for PieChart
     const pastelColors = useMemo(() => [
@@ -117,7 +136,7 @@ const GroupDetailPage = () => {
     if (!grupo) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Group not found</Text>
+                <Text>{t('groupDetail.notFound')}</Text>
             </View>
         );
     }
@@ -157,7 +176,7 @@ const GroupDetailPage = () => {
                         >
                             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>×</Text>
                         </TouchableOpacity>
-                        <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 12, color: '#322e3fff' }}>Who Pays Next?</Text>
+                        <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 12, color: '#322e3fff' }}>{t('groupDetail.whoPaysNext')}</Text>
                         <LuckyWheel
                             segments={grupo.members}
                             onFinish={(winnerName) => {
@@ -169,10 +188,14 @@ const GroupDetailPage = () => {
             </Modal>
 
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
-                Total spent: {totalExpenses.toFixed(2)} €
+                {t('groupDetail.totalSpent', { amount: totalExpenses.toFixed(2) })}
             </Text>
             <Text style={{ fontSize: 16, marginBottom: 16 }}>
-                Balance: {yourBalance >= 0 ? `you are owed ${yourBalance.toFixed(2)}` : `you should pay ${Math.abs(yourBalance).toFixed(2)}`} €
+                {t('groupDetail.balance', {
+                    balance: yourBalance >= 0
+                        ? t('groupDetail.youAreOwed', { amount: yourBalance.toFixed(2) })
+                        : t('groupDetail.youShouldPay', { amount: Math.abs(yourBalance).toFixed(2) })
+                })} €
             </Text>
 
             {/* Info de quién paga y ruleta */}
@@ -195,13 +218,13 @@ const GroupDetailPage = () => {
                 >
                     <View style={{ flex: 1 }}>
                         <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#ffffffff' }}>
-                            Next to Pay:
+                            {t('groupDetail.nextToPay')}
                         </Text>
                         <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#ffffffff' }}>
                             {nextPayer.nombre}
                         </Text>
                         <Text style={{ fontSize: 13, color: '#faf6ffff' }}>
-                            {Math.abs(nextPayer.balance).toFixed(2)} €
+                            {t('groupDetail.amountToPay', { amount: Math.abs(nextPayer.balance).toFixed(2) })} €
                         </Text>
                     </View>
                     <TouchableOpacity
@@ -232,7 +255,7 @@ const GroupDetailPage = () => {
                         paddingVertical: 8,
                         fontWeight: activeTab === 'Expenses' ? 'bold' : 'normal'
                     }}>
-                        Expenses
+                        {t('groupDetail.expensesTab')}
                     </Text>
                     <View style={{
                         height: 2,
@@ -251,7 +274,7 @@ const GroupDetailPage = () => {
                         paddingVertical: 8,
                         fontWeight: activeTab === 'Balances' ? 'bold' : 'normal'
                     }}>
-                        Balances
+                        {t('groupDetail.balancesTab')}
                     </Text>
                     <View style={{
                         height: 2,
@@ -267,7 +290,7 @@ const GroupDetailPage = () => {
                     <ScrollView style={{ maxHeight: '50%' }} showsVerticalScrollIndicator={false}>
                         {listExpenses.length === 0 ? (
                             <Text style={{ color: '#888', textAlign: 'center', marginVertical: 20 }}>
-                                No expenses recorded yet.
+                                {t('groupDetail.noExpenses')}
                             </Text>
                         ) : (
                             listExpenses.map((exp) => (
@@ -300,19 +323,19 @@ const GroupDetailPage = () => {
                         <TouchableOpacity style={globalStyles.button}
                             onPress={() => router.push(`/(auth)/group/${id}/addExpense` as any)}
                         >
-                            <Text style={globalStyles.buttonText}>Add Expense</Text>
+                            <Text style={globalStyles.buttonText}>{t('groupDetail.addExpense')}</Text>
                         </TouchableOpacity>
                     </View>
                 </>
             ) : null}
 
             {activeTab === 'Balances' && Array.isArray(grupo.members) ? (
-                <ScrollView style={{ marginTop: 16,  maxHeight: '70%' }} showsVerticalScrollIndicator={false}>
+                <ScrollView style={{ marginTop: 16, maxHeight: '70%' }} showsVerticalScrollIndicator={false}>
                     {/* Graphical representation of user contributions */}
                     {pieData.length > 0 ? (
                         <>
                             <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
-                                Contribution by User (% of Total Paid)
+                                {t('groupDetail.contributionByUser')}
                             </Text>
                             <PieChart
                                 data={pieData}
@@ -346,7 +369,7 @@ const GroupDetailPage = () => {
                                         <View>
                                             <Text style={{ fontSize: 16, color: '#333', fontWeight: '600' }}>{user.name}</Text>
                                             <Text style={{ fontSize: 12, color: '#666' }}>
-                                                Paid: {user.paid.toFixed(2)} €
+                                                {t('groupDetail.paid', { amount: user.paid.toFixed(2) })} €
                                             </Text>
                                         </View>
                                         <View style={{ alignItems: 'flex-end' }}>
@@ -355,7 +378,7 @@ const GroupDetailPage = () => {
                                             </Text>
                                             {user.paid === 0 && (
                                                 <Text style={{ fontSize: 12, color: '#999', fontStyle: 'italic' }}>
-                                                    No payments made
+                                                    {t('groupDetail.noPaymentsMade')}
                                                 </Text>
                                             )}
                                         </View>
@@ -364,13 +387,13 @@ const GroupDetailPage = () => {
                             </ScrollView>
                         </>
                     ) : (
-                        <Text style={{ color: '#888' }}>There are no expenses recorded to display the chart.</Text>
+                        <Text style={{ color: '#888' }}>{t('groupDetail.noExpensesChart')}</Text>
                     )}
 
                     {/* List of final balances */}
                     <View style={{ marginTop: 24, width: '100%', maxHeight: 300 }} >
                         <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
-                            Final Balances:
+                            {t('groupDetail.finalBalances')}
                         </Text>
                         {balances.map(b => (
                             <View key={b.nombre} style={{
@@ -384,7 +407,10 @@ const GroupDetailPage = () => {
                             }}>
                                 <Text style={{ fontSize: 16, color: '#333' }}>{b.nombre}</Text>
                                 <Text style={{ fontSize: 16, fontWeight: 'bold', color: b.balance < 0 ? '#d32f2f' : '#388e3c' }}>
-                                    {b.balance < 0 ? `owes ${Math.abs(b.balance).toFixed(2)} €` : `is owed ${b.balance.toFixed(2)} €`}
+                                    {b.balance < 0
+                                        ? t('groupDetail.owes', { amount: Math.abs(b.balance).toFixed(2) })
+                                        : t('groupDetail.isOwed', { amount: b.balance.toFixed(2) })
+                                    } €
                                 </Text>
                             </View>
                         ))}

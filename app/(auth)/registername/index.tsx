@@ -4,11 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from 'react-i18next';
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { z } from "zod";
 import styles from "../../../styles/globalStyles";
 
 export default function RegisterNameScreen() {
+    const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { session } = useAuth();
@@ -16,10 +18,10 @@ export default function RegisterNameScreen() {
 
     const signUpSchema = z.object({
         name: z.string()
-            .min(2, { message: 'Name must be at least 2 characters' })
-            .max(30, { message: 'Name must be at most 30 characters' })
-            .nonempty({ message: 'Name is required' })
-            .regex(/^[a-z0-9_-]+$/, { message: 'Name can only contain letters, numbers, underscores, and hyphens' }),
+            .min(2, { message: t('signup.nameMin') })
+            .max(30, { message: t('signup.nameMax') })
+            .nonempty({ message: t('signup.nameRequired') })
+            .regex(/^[a-z0-9_-]+$/, { message: t('signup.namePattern') }),
     });
 
     type SignUpForm = z.infer<typeof signUpSchema>;
@@ -42,10 +44,10 @@ export default function RegisterNameScreen() {
             if (result.success) {
                 setNameUser?.(data.name);
             } else {
-                setError(result.error || 'Sign up failed. Please try again.');
+                setError(result.error || t('signup.errorOccurred'));
             }
         } catch (error) {
-            setError('Error during sign up. Please try again.');
+            setError(t('signup.errorOccurred'));
             
         } finally {
 
@@ -60,19 +62,19 @@ export default function RegisterNameScreen() {
             name="name"
             render={({ field: { onChange, value } }) => (
                 <View style={styles.inputContainer}>
-                    <Text>Name</Text>
+                    <Text>{t('signup.name')}</Text>
                     <View style={styles.inputWrapper} >
                         <Ionicons name="person" size={24} color="black" />
                         <TextInput
                             style={styles.input}
-                            placeholder="Piedad"
+                            placeholder={t('signup.namePlaceholder')}
                             placeholderTextColor={"#999"}
                             onChangeText={onChange}
                             value={value ?? ''}
                         />
                     </View>
                     {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
-                    {error === 'Name is already taken' && <Text style={styles.errorText}>Name is already taken</Text>}
+                    {error === 'Name is already taken' && <Text style={styles.errorText}>{t('signup.nameTaken')}</Text>}
                 </View>
             )}
         />
@@ -82,7 +84,7 @@ export default function RegisterNameScreen() {
                 onPress={handleSubmit(onSubmit)}
                 disabled={loading}
             >
-            <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Sign Up'}</Text>
+            <Text style={styles.buttonText}>{loading ? t('signup.loading') : t('signup.submit')}</Text>
         </TouchableOpacity>
 
     </View>

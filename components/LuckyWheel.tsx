@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Easing, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Defs, G, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
 
@@ -45,6 +46,7 @@ function createWheelPaths(segments: string[]) {
 }
 
 const LuckyWheel: React.FC<LuckyWheelProps> = ({ segments, onFinish }) => {
+  const { t } = useTranslation();
   const [spinning, setSpinning] = useState(false);
   const [winnerIndex, setWinnerIndex] = useState<number | null>(null);
   const rotation = useRef(new Animated.Value(0)).current;
@@ -150,14 +152,14 @@ const LuckyWheel: React.FC<LuckyWheelProps> = ({ segments, onFinish }) => {
         onPress={spin} 
         disabled={spinning}
         accessibilityRole="button"
-        accessibilityLabel={spinning ? 'Spinning the wheel' : 'Spin the wheel'}
-        accessibilityHint='Tap to randomly select a name'
+        accessibilityLabel={spinning ? t('wheel.spinningAria', 'Spinning the wheel') : t('wheel.spinAria', 'Spin the wheel')}
+        accessibilityHint={t('wheel.spinHint', 'Tap to randomly select a name')}
       >
-        <Text style={styles.buttonText}>{spinning ? 'Spinning...' : 'Spin Wheel'}</Text>
+        <Text style={styles.buttonText}>{spinning ? t('wheel.spinning') : t('wheel.spin')}</Text>
       </TouchableOpacity>
       {winnerIndex !== null && !spinning && (
         <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 'bold', color: '#cb3325ff' }}>
-          🎉 {segments[winnerIndex]} wins! 🎉
+          {t('wheel.winner', { name: segments[winnerIndex] })}
         </Text>
       )}
     </View>

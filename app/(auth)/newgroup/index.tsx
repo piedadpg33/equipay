@@ -3,11 +3,13 @@ import { groupService } from '@/services/groupService';
 import { userService } from '@/services/userService';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { globalStyles } from '../../../styles/globalStyles';
 
 const CrearGrupoPage = () => {
+    const { t } = useTranslation();
     const [groupName, setgroupName] = useState('');
     const [selectedMembers, setselectedMembers] = useState<string[]>([]);
     const [users, setusers] = useState<any[]>([]);
@@ -43,11 +45,11 @@ const CrearGrupoPage = () => {
         try {
             setLoading(true);
             if (!groupName) {
-                alert('Please enter a group name.');
+                alert(t('newgroup.enterGroupName'));
                 return;
             }
             if (selectedMembers.length === 0) {
-                alert('Select at least one member.');
+                alert(t('newgroup.selectMember'));
                 return;
             }
 
@@ -105,7 +107,7 @@ const CrearGrupoPage = () => {
             setAddingMembers([]);
             Toast.show({
                 type: 'success',
-                text1: 'New Group Created!',
+                text1: t('newgroup.created'),
             });
             setTimeout(() => {
                 router.replace({ pathname: '/', params: { refresh: Date.now().toString() } });
@@ -113,8 +115,8 @@ const CrearGrupoPage = () => {
         } catch (e) {
             Toast.show({
                 type: 'error',
-                text1: 'Error',
-                text2: 'An error occurred while creating the group.',
+                text1: t('newgroup.error'),
+                text2: t('newgroup.errorCreating'),
             });
 
             setCreatingGroup(false);
@@ -132,26 +134,26 @@ const CrearGrupoPage = () => {
     return (
         <View style={{ flex: 1, width: Platform.OS === 'web' ? '75%' : '100%', alignSelf: 'center', backgroundColor: '#fffcfcc4', borderRadius: 12, paddingVertical: 8 }}>
             <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#f9f9f9' }}>
-                <Text style={globalStyles.label}>Name of group:</Text>
+                <Text style={globalStyles.label}>{t('newgroup.nameLabel')}</Text>
                 <View style={globalStyles.inputContainer}>
                     <View style={globalStyles.inputWrapper}>
                         <TextInput
                             style={globalStyles.input}
                             value={groupName}
                             onChangeText={setgroupName}
-                            placeholder="Enter group name"
+                            placeholder={t('newgroup.namePlaceholder')}
                             placeholderTextColor="#999"
                         />
                     </View>
                 </View>
-                <Text style={{ marginTop: 16, fontWeight: 'bold' }}>Search members:</Text>
+                <Text style={{ marginTop: 16, fontWeight: 'bold' }}>{t('newgroup.searchMembers')}</Text>
                 <View style={globalStyles.inputContainer}>
                     <View style={globalStyles.inputWrapper}>
                         <TextInput
                             style={globalStyles.input}
                             value={searchText}
                             onChangeText={setSearchText}
-                            placeholder="Search by username"
+                            placeholder={t('newgroup.searchPlaceholder')}
                             placeholderTextColor="#999"
                         />
                     </View>
@@ -161,7 +163,7 @@ const CrearGrupoPage = () => {
                 {selectedMembers.length > 0 && (
                     <View style={{ marginVertical: 8 }}>
                         <Text style={globalStyles.label}>
-                            Selected members ({selectedMembers.length}):
+                            {t('newgroup.selectedMembers', { count: selectedMembers.length })}
                         </Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                             {selectedMembers.map((member) => (
@@ -189,7 +191,7 @@ const CrearGrupoPage = () => {
                     </View>
                 )}
 
-                <View style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ccc', borderRadius: 4, backgroundColor: '#fff', marginVertical: 8 }}>
+                <ScrollView style={{ maxHeight: 100, borderWidth: 1, borderColor: '#ccc', borderRadius: 4, backgroundColor: '#adabb24a', marginVertical: 8 }} showsHorizontalScrollIndicator={false}>
                     {filteredusers.map((u) => (
                         <View key={u.user_name} style={{ flexDirection: 'row', alignItems: 'center', padding: 8, borderBottomWidth: 1, borderBottomColor: '#eee' }}>
                             <Switch
@@ -206,9 +208,9 @@ const CrearGrupoPage = () => {
                             <Text>{u.user_name || ''}</Text>
                         </View>
                     ))}
-                </View>
+                </ScrollView>
                 {searchText && filteredusers.length === 0 ? (
-                    <Text style={{ textAlign: 'center', marginVertical: 8, color: '#666' }}>No results</Text>
+                    <Text style={{ textAlign: 'center', marginVertical: 8, color: '#666' }}>{t('newgroup.noResults')}</Text>
                 ) : null}
 
                 {/* Show group creation progress */}
@@ -222,10 +224,10 @@ const CrearGrupoPage = () => {
                         borderColor: '#B0E0E6'
                     }}>
                         <Text style={{ fontWeight: 'bold', color: '#2E8B57', marginBottom: 8 }}>
-                            ⚙️ Creating group "{groupName}"...
+                            ⚙️ {t('newgroup.creating', { groupName })}
                         </Text>
                         <Text style={{ color: '#2E8B57', marginBottom: 8 }}>
-                            Adding members to the group:
+                            {t('newgroup.addingMembers')}
                         </Text>
                         {addingMembers.map((member, index) => (
                             <Text key={index} style={{ color: '#2E8B57', marginLeft: 16 }}>
@@ -243,7 +245,7 @@ const CrearGrupoPage = () => {
                         disabled={creatingGroup}
                     >
                         <Text style={globalStyles.buttonText}>
-                            {creatingGroup ? 'Creating group...' : 'Create group'}
+                            {creatingGroup ? t('newgroup.creatingButton') : t('newgroup.createButton')}
                         </Text>
                     </TouchableOpacity>
 
@@ -251,7 +253,7 @@ const CrearGrupoPage = () => {
                         style={{ ...globalStyles.button, backgroundColor: 'rgba(255, 0, 0, 0.25)' }}
                         onPress={() => router.back()}
                     >
-                        <Text style={globalStyles.buttonText}>Cancel</Text>
+                        <Text style={globalStyles.buttonText}>{t('newgroup.cancel')}</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

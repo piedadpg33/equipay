@@ -8,6 +8,7 @@ import { authService } from '@/services';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Image, Text, TextInput, View } from 'react-native';
 import styles from '../../../styles/globalStyles';
 
@@ -16,14 +17,15 @@ import {
 } from 'react-native';
 
 export default function SignIn() {
+    const { t } = useTranslation();
 
 
     const signInSchema = z.object({
-        email: z.string().email({ message: 'Invalid email address' }),
+        email: z.string().email({ message: t('signin.emailInvalid') }),
         password: z
             .string()
-            .min(6, { message: 'Password must be at least 6 characters' })
-            .max(50, { message: 'Password must be at most 50 characters' })
+            .min(6, { message: t('signin.passwordMin') })
+            .max(50, { message: t('signin.passwordMax') })
     });
 
     type SignInForm = z.infer<typeof signInSchema>;
@@ -43,10 +45,17 @@ export default function SignIn() {
 
             //if there is no error, we will sign in the user
 
-            await authService.signIn(data.email, data.password);
+            const result = await authService.signIn(data.email, data.password);
+              if (!result.success) {
+                if (result.error === 'INVALID_CREDENTIALS') {
+                    setError(t('signin.invalidCredentials'));
+                } else {
+                    setError(result.error || t('signin.errorOccurred'));
+                }
+            }
 
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error signing in');
+            setError(err instanceof Error ? err.message : t('signin.errorOccurred'));
         } finally {
             setLoading(false);
         }
@@ -67,12 +76,12 @@ export default function SignIn() {
                     name="email"
                     render={({ field: { onChange, value } }) => (
                         <View style={styles.inputContainer}>
-                            <Text>Email</Text>
+                            <Text>{t('signin.email')}</Text>
                             <View style={styles.inputWrapper} >
                                 <Ionicons name="mail" size={24} color="black" />
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="you@example.com"
+                                    placeholder={t('signin.emailPlaceholder')}
                                     placeholderTextColor={"#999"}
                                     onChangeText={onChange}
                                     value={value ?? ''}
@@ -88,12 +97,12 @@ export default function SignIn() {
                     name="password"
                     render={({ field: { onChange, value } }) => (
                         <View style={styles.inputContainer}>
-                            <Text>Password</Text>
+                            <Text>{t('signin.password')}</Text>
                             <View style={styles.inputWrapper} >
                                 <Ionicons name="lock-closed" size={24} color="black" />
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="********"
+                                    placeholder={t('signin.passwordPlaceholder')}
                                     placeholderTextColor={"#999"}
                                     secureTextEntry
                                     onChangeText={onChange}
@@ -108,7 +117,7 @@ export default function SignIn() {
             </View>
 
             <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
+                <Text style={styles.buttonText}>{loading ? t('signin.loading') : t('signin.submit')}</Text>
             </TouchableOpacity>
             {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -123,7 +132,7 @@ export default function SignIn() {
                             setError(result.error);
                         }
                     } catch (err) {
-                        setError(err instanceof Error ? err.message : 'Error signing in with Google');
+                        setError(err instanceof Error ? err.message : t('signin.googleError'));
                     } finally {
                         setGoogleLoading(false);
                     }
@@ -132,16 +141,16 @@ export default function SignIn() {
             >
                 <Ionicons name="logo-google" size={20} color="white" style={styles.googleIcon} />
                 <Text style={styles.buttonText}>
-                    {googleLoading ? 'Connecting...' : 'Sign In with Google'}
+                    {googleLoading ? t('signin.connecting') : t('signin.google')}
                 </Text>
             </TouchableOpacity>
             <Text style={styles.linkText}>
-                Don't have an account?{' '}
+                {t('signin.noAccount')}{' '}
                 <Text
                     style={styles.linkHighlight}
                     onPress={() => router.push("/signup")}
                 >
-                    create an account
+                    {t('signin.createAccount')}
                 </Text>
             </Text>
 
