@@ -24,11 +24,11 @@
 
 
 ## Images
-![Login Screen](./snapshots/login.png)
-![Home Screen](./snapshots/menu.png)
-![Group Screen](./snapshots/expenses.png)
-![Balances Screen](./snapshots/balances.png)
-![Wheel Screen](./snapshots/ruleta.png)
+<img src="./snapshots/login.png" alt="Login Screen" width="300"/>
+<img src="./snapshots/menu.png" alt="Home Screen" width="300"/>
+<img src="./snapshots/expenses.png" alt="Group Screen" width="300"/>
+<img src="./snapshots/balances.png" alt="Balances Screen" width="300"/>
+<img src="./snapshots/ruleta.png" alt="Wheel Screen" width="300"/>
 
 
 
