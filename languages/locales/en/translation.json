@@ -67,7 +67,7 @@
     "couldNotIdentifyUser": "Could not identify user",
     "couldNotAddExpense": "Could not add expense",
     "successTitle": "Expense added successfully",
-    "successDescription": "Refresh the group page to see the new expense.",
+    "successDescription": "The expense has been added to the group.",
     "errorOccurred": "An error occurred while adding the expense.",
     "amountLabel": "Amount (€)",
     "amountPlaceholder": "0.00",

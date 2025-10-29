@@ -67,7 +67,7 @@
     "couldNotIdentifyUser": "No se pudo identificar al usuario",
     "couldNotAddExpense": "No se pudo agregar el gasto",
     "successTitle": "Gasto agregado exitosamente",
-    "successDescription": "Actualiza la página del grupo para ver el nuevo gasto.",
+    "successDescription": "El gasto ha sido agregado al grupo.",
     "errorOccurred": "Ocurrió un error al agregar el gasto.",
     "amountLabel": "Cantidad (€)",
     "amountPlaceholder": "0.00",

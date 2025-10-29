@@ -293,7 +293,7 @@ const GroupDetailPage = () => {
                                 {t('groupDetail.noExpenses')}
                             </Text>
                         ) : (
-                            listExpenses.map((exp) => (
+                            listExpenses.slice().reverse().map((exp) => (
                                 <View key={exp.id} style={{
                                     backgroundColor: '#fff',
                                     borderRadius: 8,
