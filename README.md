@@ -22,6 +22,18 @@
 - **i18next** (translation)
 - **Expo Router**
 
+
+## Images
+![Login Screen](./snapshots/login.png)
+![Home Screen](./snapshots/menu.png)
+![Group Screen](./snapshots/expenses.png)
+![Balances Screen](./snapshots/balances.png)
+![Wheel Screen](./snapshots/ruleta.png)
+
+
+
+
+
 ## Usage
 
 [Go to Equipay web page](https://equipay-xi.vercel.app/)
